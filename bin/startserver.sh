@@ -1,5 +1,6 @@
 #!/bin/bash
 echo 'Booting server...'
+cd $(dirname $0)/..
 
 # Boot WebSocket server
 python tornado_main.py &

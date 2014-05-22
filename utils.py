@@ -7,3 +7,7 @@ class JsonResponse(HttpResponse):
                  content_type='application/json'):
         super(JsonResponse, self).__init__(json.dumps(content), mimetype=mimetype,
                                            status=status, content_type=content_type)
+
+
+class JsonStatuses:
+    OK = JsonResponse({'status': 'ok'})

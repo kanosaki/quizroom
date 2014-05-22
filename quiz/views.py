@@ -20,7 +20,7 @@ def submit_answer(req, quiz_id):
     ans_selection = req.REQUEST['answer']
     ans = models.Answer(quiz=quiz, selection=ans_selection, user=user)
     ans.save()
-    return render(req, 'quiz/index.html', {'foo': ans})
+    return utils.JsonStatuses.OK
 
 
 def signup_user(req):
@@ -29,7 +29,7 @@ def signup_user(req):
     user.save()
     req.session['uid'] = user.pk
     req.session['name'] = name
-    return utils.JsonResponse({'status': 'ok'})
+    return utils.JsonStatuses.OK
 
 
 
