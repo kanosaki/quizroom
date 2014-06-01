@@ -1,0 +1,11 @@
+{% extends "quiz/base.html" %}
+
+{% block title %}Quizroom{% endblock %}
+{% block page_title %}Q.{{ quiz.id }}{% endblock %}
+
+{% block content %}
+    <div class="jumbotron">
+        <h2>Q.{{ quiz.id }} - {{ quiz.question }}</h2>
+    </div>
+    {{ quiz_content }}
+{% endblock %}

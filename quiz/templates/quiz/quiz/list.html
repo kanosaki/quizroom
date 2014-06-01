@@ -1,0 +1,33 @@
+{% extends "quiz/base.html" %}
+
+{% block title %}Quizroom | Quizes{% endblock %}
+
+{% block content %}
+  <table class="table">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Question</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for quiz in quizes %}
+      <tr>
+        <td>
+          {{ quiz.id }}
+        </td>
+        <td>
+          {{ quiz.question }}
+        </td>
+        <td>
+          {% if quiz.is_active %}
+            <button class="btn btn-primary">Join</button>
+          {% endif %}
+          <a class="btn btn-default" href="{% url "quiz_view" quiz.id %}">Edit</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

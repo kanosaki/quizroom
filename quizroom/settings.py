@@ -10,19 +10,32 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-from django.conf.global_settings import TEMPLATE_DIRS
+import json
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+
+SECRET_KEY_FILE = os.path.expandvars("$HOME/.django_secret_key")
+
+
+def get_secret_key(secret_key_filepath=SECRET_KEY_FILE):
+    try:
+        with open(secret_key_filepath, 'r') as f:
+            config = json.load(f)
+            return config['seacret_key']
+    except (IOError, KeyError):
+        if not DEBUG:
+            raise ImproperlyConfigured()
+        else:
+            return '4zr!svy5!=ks$e1%j3srl7hlnmrn@ugs8gz5)(pwnwjkq2j97v'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '4zr!svy5!=ks$e1%j3srl7hlnmrn@ugs8gz5)(pwnwjkq2j97v'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+SECRET_KEY = get_secret_key()
 
 TEMPLATE_DEBUG = True
 
@@ -103,4 +116,5 @@ BOWER_INSTALLED_APPS = (
     'jquery',
     'underscore',
 )
+
 
