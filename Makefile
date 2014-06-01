@@ -3,7 +3,7 @@ MANAGE = ./manage.py
 
 .PHONY: run
 run:
-	bin/startserver.sh
+	$(MANAGE) runserver
 
 .PHONY: bower_update
 bower_update:
