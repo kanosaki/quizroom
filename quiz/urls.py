@@ -6,13 +6,14 @@ from quiz import viewmodels
 
 admin.autodiscover()
 
-user_urls = patterns(
+participant_urls = patterns(
     '',
-    url(r'^Update$', viewmodels.UpdateUser.as_view(), name='user_update'),
-    url(r'^signup_auto$', views.signup_user, name='user_signup_auto'),
-    url(r'^signup$', viewmodels.CreateUser.as_view(), name='user_signup'),
-    url(r'^list$', viewmodels.UserList.as_view(), name='user_list'),
-    url(r'^(?P<pk>\d+)/', viewmodels.ViewUser.as_view(), name='user_view'),
+    url(r'^Update$', viewmodels.UpdateParticipant.as_view(), name='participant_update'),
+    url(r'^signup_auto$', views.signup_user, name='participant_signup_auto'),
+    url(r'^register$', viewmodels.CreateParticipant.as_view(), name='participant_register'),
+    url(r'^list$', viewmodels.UserList.as_view(), name='participant_list'),
+    url(r'^(?P<pk>\d+)/', viewmodels.ViewUser.as_view(), name='participant_view'),
+    url(r'^signup$', viewmodels.CreateParticipant.as_view(), name='user_signup'),
 )
 
 quiz_urls = patterns(
@@ -24,14 +25,13 @@ quiz_urls = patterns(
 
 playquiz_urls = patterns(
     '',
-    url(r'^now$', views.quiz_now, name='playquiz_now'),
+    url(r'^now$', viewmodels.RoomNowView.as_view(), name='play_now'),
 )
 
 urlpatterns = patterns(
     '',
     url(r'^quiz/', include(quiz_urls)),
-    url(r'^user/', include(user_urls)),
+    url(r'^user/', include(participant_urls)),
     url(r'^play/', include(playquiz_urls)),
-    url(r'^my$', views.about_me, name='user_me'),
-    url(r'^$', views.about_me, name='user_me'),
+    url(r'^mypage$', views.mypage, name='mypage'),
 )

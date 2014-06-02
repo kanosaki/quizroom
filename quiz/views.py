@@ -2,11 +2,10 @@ from django.shortcuts import render, get_object_or_404
 from django.utils.safestring import mark_safe
 import django.core.exceptions
 from django.http import HttpResponse
-from quiz.viewutils import signin_required
 
 import utils
-
 from quiz import models
+from quiz.viewutils import signin_required
 
 
 def index(req):
@@ -39,6 +38,6 @@ def signup_user(req):
     return utils.JsonStatuses.OK
 
 
-def about_me(req):
-    uid = req.session['uid']
-    return uid
+@signin_required
+def mypage(req, user):
+    return render(req, 'quiz/mypage.html', {'user': user})

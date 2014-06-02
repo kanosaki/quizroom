@@ -1,0 +1,42 @@
+{% extends "quiz/base.html" %}
+
+{% block title %}Users - Quizroom{% endblock %}
+{% block page_title %}Users{% endblock %}
+
+{% block page_js %}
+  <script type="text/javascript">
+  $(document).ready(function(){
+    var validate_submit = function(){
+      var allow_submit = false;
+      allow_submit = allow_submit || $("#id_name").val() != "";
+      if(allow_submit) {
+        $("#submit").removeAttr("disabled");
+      } else {
+        $("#submit").attr("disabled", "disabled");
+      }
+    };
+
+    $(".validate-trigger").on('keyup', validate_submit);
+  });
+  </script>
+{% endblock %}
+
+{% block content %}
+  <h3>参加登録</h3>
+  <p>スコア表示等に使用する名前を登録します．</p>
+  <form action="" method="post">{% csrf_token %}
+    <table class="table">
+      <tr>
+        <th><label for="id_name">表示名</label></th>
+        <td><input class="validate-trigger" id="id_name" name="name" type="text"/></td>
+      </tr>
+    </table>
+    <input type="submit" id="submit" value="登録" disabled="disabled" class="btn btn-primary"/>
+  </form>
+  <br />
+  <p class="text-muted small">
+    ユーザーはデフォルトではブラウザによって識別されます．
+    正式なユーザー名とパスワードによって認証を行いたい場合は<a href="{% url 'user_signup' %}">ユーザー登録</a>を行うと，
+    ここでの登録と紐付けられます
+  </p>
+{% endblock %}

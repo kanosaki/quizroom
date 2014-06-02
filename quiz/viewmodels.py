@@ -1,43 +1,53 @@
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView  # , DeleteView
 from django.views.generic.detail import DetailView
+from django.views.generic import TemplateView
 from django.http import HttpRequest
+from django.shortcuts import redirect
 
-from quiz.forms import UserForm, QuizForm
-from quiz.models import User, Quiz
+from quiz.viewutils import signin_required
+from quiz.forms import ParticipantForm, QuizForm
+from quiz.models import Participant, Quiz, Room
 
 
 # ----------------------------------
 # User
 # ----------------------------------
-class UserMixin(object):
-    model = User
+class ParticipantMixin(object):
+    model = Participant
 
     def get_context_data(self, **kw):
-        kw.update({'object_name': 'User'})
+        kw.update({'object_name': 'Participant'})
         return kw
 
 
-class UserFormMixin(UserMixin):
-    formclass = UserForm
-    template_name = 'quiz/user/form.html'
+class ParticipantFormMixin(ParticipantMixin):
+    formclass = ParticipantForm
+    template_name = 'quiz/participants/form.html'
 
 
-class UserList(UserMixin, ListView):
-    template_name = 'quiz/user/list.html'
+class UserList(ParticipantMixin, ListView):
+    template_name = 'quiz/participants/list.html'
 
 
-class ViewUser(UserMixin, DetailView):
+class ViewUser(ParticipantMixin, DetailView):
     pass
 
 
-class CreateUser(UserFormMixin, CreateView):
-    def post(self, request: HttpRequest, *args, **kwargs):
-        super().post(request, *args, **kwargs)
-        request.session['uid'] = self.object.id
+class CreateParticipant(ParticipantFormMixin, CreateView):
+    template_name = 'quiz/participants/register.html'
+
+    def post(self, request, *args, **kwargs):
+        session_key = request.session.session_key
+        name = request.POST['name']
+        part = Participant(name=name, session_key=session_key, django_user=None)
+        part.save()
+        request.session['name'] = name
+        request.session['uid'] = part.id
+        return redirect('mypage')
 
 
-class UpdateUser(UserFormMixin, UpdateView):
+class UpdateParticipant(ParticipantFormMixin, UpdateView):
     pass
 
 
@@ -68,10 +78,23 @@ class ListQuiz(QuizMixin, ListView):
         kw['quizes'] = Quiz.objects.all()
         return kw
 
+
 class CreateQuiz(QuizFormMixin, CreateView):
     pass
 
 
 class UpdateQuiz(QuizFormMixin, UpdateView):
     pass
+
+
+class RoomNowView(TemplateView):
+    template_name = 'quiz/room/view.html'
+
+    def get_context_data(self, **kw):
+        uid = self.request.session['uid']
+        participant = Participant.objects.get(pk=uid)
+        kw.update(participant=participant)
+        return kw
+
+
 

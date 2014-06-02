@@ -1,0 +1,8 @@
+{% extends "quiz/base.html" %}
+
+{% block title %}Quizroom{% endblock %}
+
+{% block content %}
+  <h4>{{ user.name }}</h4>
+  <a href="{% url 'play_now' %}" class="btn btn-primary">現在のゲームに参加</a>
+{% endblock %}

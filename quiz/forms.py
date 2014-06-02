@@ -1,12 +1,12 @@
 
 from django import forms
 
-from quiz.models import User, Quiz
+from quiz.models import Participant, Quiz
 
 
-class UserForm(forms.ModelForm):
+class ParticipantForm(forms.ModelForm):
     class Meta:
-        model = User
+        model = Participant
         fields = ('name',)
 
 
@@ -14,3 +14,4 @@ class QuizForm(forms.ModelForm):
     class Meta:
         model = Quiz
         fields = ('question',)
+

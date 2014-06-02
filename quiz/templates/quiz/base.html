@@ -15,7 +15,9 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-   {% block ex_js %}{% endblock %}
+  <script type="text/javascript" src="{% static "jquery/dist/jquery.min.js" %}"></script>
+  <script type="text/javascript" src="{% static "underscore/underscore.js" %}"></script>
+  <script type="text/javascript" src="{% static "bootstrap/dist/js/bootstrap.min.js" %}"></script>
 </head>
 <body>
 <!-- NAVBAR -->
@@ -48,8 +50,6 @@
   {% endblock %}
 </div>
 
-<script type="text/javascript" src="{% static "jquery/dist/jquery.min.js" %}"></script>
-<script type="text/javascript" src="{% static "underscore/underscore.js" %}"></script>
-<script type="text/javascript" src="{% static "bootstrap/dist/js/bootstrap.min.js" %}"></script>
+{% block page_js %}{% endblock %}
 </body>
 </html>
