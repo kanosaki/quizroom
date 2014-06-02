@@ -2,12 +2,13 @@ from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView  # , DeleteView
 from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView
-from django.http import HttpRequest
-from django.shortcuts import redirect
+from django.http import HttpResponse
+from django.shortcuts import redirect, render
+from django.core.urlresolvers import reverse_lazy
 
-from quiz.viewutils import signin_required
 from quiz.forms import ParticipantForm, QuizForm
-from quiz.models import Participant, Quiz, Room
+from quiz.models import Participant, Quiz, Robby
+import quiz.control
 
 
 # ----------------------------------
@@ -87,14 +88,32 @@ class UpdateQuiz(QuizFormMixin, UpdateView):
     pass
 
 
-class RoomNowView(TemplateView):
-    template_name = 'quiz/room/view.html'
+class ViewRobby(TemplateView):
+    template_name = 'quiz/robby/view.html'
 
     def get_context_data(self, **kw):
         uid = self.request.session['uid']
         participant = Participant.objects.get(pk=uid)
         kw.update(participant=participant)
         return kw
+
+    def get(self, request, *args, **kwargs):
+        try:
+            return self.render_to_response(self.get_context_data())
+        except KeyError:
+            return redirect('participant_register')
+
+
+class ActiveRobbyView(TemplateView):
+    template_name = 'quiz/robby/view.html'
+
+    def get(self, request, *args, **kwargs):
+        active_robby = quiz.control.active_robby.get()
+        if active_robby is not None:
+            return redirect('play', active_robby.pk)
+        else:
+            return render(request, 'quiz/robby/norobby.html')
+
 
 
 

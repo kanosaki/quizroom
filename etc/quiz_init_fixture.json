@@ -1,0 +1,70 @@
+[
+{
+  "pk": 1, 
+  "model": "quiz.quiz", 
+  "fields": {
+    "caption": "First Quiz", 
+    "question": "First Quiz question"
+  }
+},
+{
+  "pk": 2, 
+  "model": "quiz.quiz", 
+  "fields": {
+    "caption": "Second quiz", 
+    "question": "Second quiz question"
+  }
+},
+{
+  "pk": 3, 
+  "model": "quiz.quiz", 
+  "fields": {
+    "caption": "Third Quiz", 
+    "question": "Third quiz question"
+  }
+},
+{
+  "pk": 1, 
+  "model": "quiz.quizseries", 
+  "fields": {
+    "quizes": [
+      1, 
+      2, 
+      3
+    ]
+  }
+},
+{
+  "pk": 2, 
+  "model": "quiz.quizseries", 
+  "fields": {
+    "quizes": [
+      1, 
+      2
+    ]
+  }
+},
+{
+  "pk": 3, 
+  "model": "quiz.quizseries", 
+  "fields": {
+    "quizes": [
+      2, 
+      3
+    ]
+  }
+},
+{
+  "pk": 1, 
+  "model": "quiz.robby", 
+  "fields": {
+    "started_time": null, 
+    "quiz_series": 1, 
+    "finished_time": null, 
+    "active_quiz": null, 
+    "players": [
+      1
+    ]
+  }
+}
+]

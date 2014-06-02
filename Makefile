@@ -14,9 +14,10 @@ bower_update:
 write_requirements:
 	pip freeze > etc/requirements.txt
 
-.PHONY: resetdb
-resetdb:
-	$(MANAGE) dumpdata auth.User --indent 4 > etc/users.json
-	rm db.sqlite3
+.PHONY: resetdb_test
+resetdb_test:
+	rm db/db.sqlite3
+	rm -r db/control.leveldb
 	$(MANAGE) syncdb
 	$(MANAGE) loaddata etc/users.json
+	$(MANAGE) loaddata etc/quiz_init_fixture.json

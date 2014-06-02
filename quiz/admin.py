@@ -16,7 +16,7 @@ admin.site.register(quiz.models.Quiz, QuizAdmin)
 
 class RoomAdmin(admin.ModelAdmin):
     pass
-admin.site.register(quiz.models.Room, RoomAdmin)
+admin.site.register(quiz.models.Robby, RoomAdmin)
 
 
 class QuizSeriesAdmin(admin.ModelAdmin):

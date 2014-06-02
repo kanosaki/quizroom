@@ -36,5 +36,8 @@ components/*
 static/*
 !static/.gitkeep
 
+db/*
+!db/.gitkeep
+
 # Databases
 *.sqlite3

@@ -25,7 +25,8 @@ quiz_urls = patterns(
 
 playquiz_urls = patterns(
     '',
-    url(r'^now$', viewmodels.RoomNowView.as_view(), name='play_now'),
+    url(r'^now$', viewmodels.ActiveRobbyView.as_view(), name='play_now'),
+    url(r'^(?P<pk>\d+)/$', viewmodels.ViewRobby.as_view(), name='play'),
 )
 
 urlpatterns = patterns(
