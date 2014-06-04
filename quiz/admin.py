@@ -7,23 +7,9 @@ class ParticipantAdmin(admin.ModelAdmin):
     pass
 
 admin.site.register(quiz.models.Participant, ParticipantAdmin)
-
-
-class QuizAdmin(admin.ModelAdmin):
-    pass
-admin.site.register(quiz.models.Quiz, QuizAdmin)
-
-
-class RoomAdmin(admin.ModelAdmin):
-    pass
-admin.site.register(quiz.models.Robby, RoomAdmin)
-
-
-class QuizSeriesAdmin(admin.ModelAdmin):
-    pass
-admin.site.register(quiz.models.QuizSeries, QuizSeriesAdmin)
-
-
-class UserAnswerAdmin(admin.ModelAdmin):
-    pass
-admin.site.register(quiz.models.UserAnswer, UserAnswerAdmin)
+admin.site.register(quiz.models.Quiz)
+admin.site.register(quiz.models.QuizEntry)
+admin.site.register(quiz.models.AnswerChoice)
+admin.site.register(quiz.models.Lobby)
+admin.site.register(quiz.models.QuizSeries)
+admin.site.register(quiz.models.UserAnswer)

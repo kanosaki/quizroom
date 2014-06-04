@@ -13,5 +13,5 @@ class ParticipantForm(forms.ModelForm):
 class QuizForm(forms.ModelForm):
     class Meta:
         model = Quiz
-        fields = ('question',)
+        fields = ('caption',)
 

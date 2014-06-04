@@ -3,30 +3,28 @@
 from django.conf import settings
 import leveldb
 
-from quiz.models import Robby
+from quiz.models import Lobby
 
 
-default_db = leveldb.LevelDB(settings.CONTROL_LEVELDB)
-
-DEFAULT_ACTIVE_ROBBY_KEY = 'active_robby_pk'
+DEFAULT_ACTIVE_LOBBY_KEY = 'active_lobby_pk'
 
 
-class RobbyControl(object):
-    def __init__(self, db=default_db, active_robby_key=DEFAULT_ACTIVE_ROBBY_KEY):
-        self.active_robby_key = active_robby_key
-        self.db = db
+class LobbyControl(object):
+    def __init__(self, db_path=settings.CONTROL_LEVELDB, active_lobby_key=DEFAULT_ACTIVE_LOBBY_KEY):
+        self.active_lobby_key = active_lobby_key
+        self.db = leveldb.LevelDB(db_path, create_if_missing=True)
 
     def get(self):
         try:
-            robby_pk = self.db.Get(self.active_robby_key)
-            return Robby.objects.get(pk=robby_pk)
+            lobby_pk = self.db.Get(self.active_lobby_key)
+            return Lobby.objects.get(pk=lobby_pk)
         except KeyError:
             if settings.DEBUG:
                 self.set('1')
             return None
 
     def set(self, robby_pk):
-        self.db.Put(self.active_robby_key, robby_pk)
+        self.db.Put(self.active_lobby_key, robby_pk)
 
     # TODO: クライアントに参加者一覧の更新を通知したり
     def trigger_client_joined(self):
@@ -43,4 +41,4 @@ class RobbyControl(object):
     def trigger_room_closed(self):
         pass
 
-active_robby = RobbyControl()
+active_lobby = LobbyControl()

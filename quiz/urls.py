@@ -23,16 +23,17 @@ quiz_urls = patterns(
     url(r'^(?P<pk>\d+)/submit_answer', views.submit_answer, name='quiz_submit_answer'),
 )
 
-playquiz_urls = patterns(
+lobby_urls = patterns(
     '',
-    url(r'^now$', viewmodels.ActiveRobbyView.as_view(), name='play_now'),
-    url(r'^(?P<pk>\d+)/$', viewmodels.ViewRobby.as_view(), name='play'),
+    url(r'^now$', viewmodels.ActiveLobbyView.as_view(), name='lobby_now'),
+    url(r'^(?P<pk>\d+)/$', viewmodels.ViewLobby.as_view(), name='lobby_show'),
+    url(r'^control/(?P<pk>\d+)/$', viewmodels.ControlLobby.as_view(), name='lobby_control'),
 )
 
 urlpatterns = patterns(
     '',
     url(r'^quiz/', include(quiz_urls)),
     url(r'^user/', include(participant_urls)),
-    url(r'^play/', include(playquiz_urls)),
+    url(r'^lobby/', include(lobby_urls)),
     url(r'^mypage$', views.mypage, name='mypage'),
 )

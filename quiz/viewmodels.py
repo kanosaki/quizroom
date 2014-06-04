@@ -7,7 +7,7 @@ from django.shortcuts import redirect, render
 from django.core.urlresolvers import reverse_lazy
 
 from quiz.forms import ParticipantForm, QuizForm
-from quiz.models import Participant, Quiz, Robby
+from quiz.models import Participant, Quiz, Lobby
 import quiz.control
 
 
@@ -88,8 +88,8 @@ class UpdateQuiz(QuizFormMixin, UpdateView):
     pass
 
 
-class ViewRobby(TemplateView):
-    template_name = 'quiz/robby/view.html'
+class ViewLobby(TemplateView):
+    template_name = 'quiz/lobby/view.html'
 
     def get_context_data(self, **kw):
         uid = self.request.session['uid']
@@ -104,15 +104,22 @@ class ViewRobby(TemplateView):
             return redirect('participant_register')
 
 
-class ActiveRobbyView(TemplateView):
-    template_name = 'quiz/robby/view.html'
+class ControlLobby(TemplateView):
+    template_name = 'quiz/lobby/control.html'
+
+    def get_context_data(self, **kw):
+        return kw
+
+
+class ActiveLobbyView(TemplateView):
+    template_name = 'quiz/lobby/view.html'
 
     def get(self, request, *args, **kwargs):
-        active_robby = quiz.control.active_robby.get()
-        if active_robby is not None:
-            return redirect('play', active_robby.pk)
+        active_lobby = quiz.control.active_lobby.get()
+        if active_lobby is not None:
+            return redirect('lobby_show', active_lobby.pk)
         else:
-            return render(request, 'quiz/robby/norobby.html')
+            return render(request, 'quiz/lobby/nolobby.html')
 
 
 
