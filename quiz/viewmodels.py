@@ -1,14 +1,15 @@
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView  # , DeleteView
 from django.views.generic.detail import DetailView
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.core.urlresolvers import reverse_lazy
 
 from quiz.forms import ParticipantForm, QuizForm
 from quiz.models import Participant, Quiz, Lobby
-import quiz.control
+from utils import JsonResponse
+from quiz import control
 
 
 # ----------------------------------
@@ -111,16 +112,23 @@ class ControlLobby(TemplateView):
         return kw
 
 
-class ActiveLobbyView(TemplateView):
+class ActiveLobbyView(View):
     template_name = 'quiz/lobby/view.html'
 
     def get(self, request, *args, **kwargs):
-        active_lobby = quiz.control.active_lobby.get()
+        active_lobby = control.active_lobby.get()
         if active_lobby is not None:
             return redirect('lobby_show', active_lobby.pk)
         else:
             return render(request, 'quiz/lobby/nolobby.html')
 
-
+    def post(self, req, *args, **kw):
+        activating_id = req.POST['id']
+        if activating_id == 'default':
+            lobby = Lobby.objects.filter(started_time=None).first()
+        else:
+            lobby = Lobby.objects.get(pk=activating_id)
+        control.active_lobby.set(lobby.pk)
+        return JsonResponse({'status': 'OK'})
 
 

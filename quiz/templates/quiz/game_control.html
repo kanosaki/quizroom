@@ -1,0 +1,22 @@
+{% extends "quiz/base.html" %}
+
+{% block title %}Quizroom{% endblock %}
+
+{% block page_js %}
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $("#start-default-robby").click(function () {
+        $.post('{% url 'lobby_now' %}', {'id': 'default'},
+                function (data) {
+                  alert(data);
+                });
+      });
+    });
+  </script>
+{% endblock %}
+
+{% block content %}
+  <h3>Game control</h3>
+  <h3>DEBUG</h3>
+  <button id="start-default-robby" class="btn btn-default">Start default robby</button>
+{% endblock %}

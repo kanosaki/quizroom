@@ -38,6 +38,10 @@ def signup_user(req):
     return utils.JsonStatuses.OK
 
 
+def game_control(req):
+    return render(req, 'quiz/game_control.html', {})
+
+
 @signin_required
 def mypage(req, user):
     return render(req, 'quiz/mypage.html', {'user': user})

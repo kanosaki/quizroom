@@ -23,8 +23,8 @@ class LobbyControl(object):
                 self.set('1')
             return None
 
-    def set(self, robby_pk):
-        self.db.Put(self.active_lobby_key, robby_pk)
+    def set(self, lobby_pk):
+        self.db.Put(self.active_lobby_key, str(lobby_pk))
 
     # TODO: クライアントに参加者一覧の更新を通知したり
     def trigger_client_joined(self):
