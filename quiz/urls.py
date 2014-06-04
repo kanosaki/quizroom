@@ -37,4 +37,5 @@ urlpatterns = patterns(
     url(r'^lobby/', include(lobby_urls)),
     url(r'^control/', views.game_control, name='game_control'),
     url(r'^mypage$', views.mypage, name='mypage'),
+    url(r'^$', views.mypage, name='index'),
 )

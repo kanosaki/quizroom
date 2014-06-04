@@ -40,12 +40,14 @@ class CreateParticipant(ParticipantFormMixin, CreateView):
     template_name = 'quiz/participants/register.html'
 
     def post(self, request, *args, **kwargs):
-        session_key = request.session.session_key
         name = request.POST['name']
+        if not request.session.exists(request.session.session_key):
+            request.session.create()
+        session_key = request.session.session_key
         part = Participant(name=name, session_key=session_key, django_user=None)
         part.save()
-        request.session['name'] = name
         request.session['uid'] = part.id
+        request.session['name'] = name
         return redirect('mypage')
 
 
