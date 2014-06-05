@@ -16,8 +16,8 @@ write_requirements:
 
 .PHONY: resetdb_test
 resetdb_test:
-	rm db/db.sqlite3
-	rm -r db/control.leveldb
+	rm -f db/db.sqlite3
+	rm -fr db/control.leveldb
 	$(MANAGE) syncdb
 	$(MANAGE) loaddata etc/users.json
 	$(MANAGE) loaddata etc/quiz_init_fixture.json
