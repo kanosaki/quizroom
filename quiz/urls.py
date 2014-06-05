@@ -9,7 +9,6 @@ admin.autodiscover()
 participant_urls = patterns(
     '',
     url(r'^Update$', viewmodels.UpdateParticipant.as_view(), name='participant_update'),
-    url(r'^signup_auto$', views.signup_user, name='participant_signup_auto'),
     url(r'^register$', viewmodels.CreateParticipant.as_view(), name='participant_register'),
     url(r'^list$', viewmodels.UserList.as_view(), name='participant_list'),
     url(r'^(?P<pk>\d+)/', viewmodels.ViewUser.as_view(), name='participant_view'),

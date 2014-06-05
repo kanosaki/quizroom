@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from datetime import datetime
 from django.db import models
 import django.contrib.auth
 
@@ -60,6 +60,10 @@ class QuizEntry(models.Model):
         return u'Quiz Series entry %d' % self.id
 
 
+class QuizSeriesFinished(Exception):
+    pass
+
+
 class QuizSeries(models.Model):
     u"""実際にQuizをRoomで使用する時のためのデコレータ
 
@@ -67,6 +71,7 @@ class QuizSeries(models.Model):
     実際のゲーム進行のデータを制御します
     """
     quizes = models.ManyToManyField(QuizEntry)
+    active_quiz = models.ForeignKey(QuizEntry, blank=True, null=True, related_name='active_quiz')
 
     SCORING_TYPE = (
         ('CHOICE', 'Choice'),  # 正解・不正解制クイズ
@@ -87,6 +92,18 @@ class QuizSeries(models.Model):
         default=0.0,
         help_text=u"何秒で次の問題へ送るかを秒単位で指定します．0以下にすると自動で次の問題へ送りません",
     )
+
+    def go_next_quiz(self):
+        ordered_quizes = list(self.quizes.order_by('order'))
+        next_index = ordered_quizes.index(self.active_quiz) + 1
+        if next_index < len(ordered_quizes) - 1:
+            self.active_quiz = ordered_quizes[next_index]
+        else:
+            self.active_quiz = None
+        self.quiz_series.save()
+
+    def __len__(self):
+        return self.quizes.count()
 
     def __unicode__(self):
         return u'Quiz Series %d' % self.id
@@ -118,11 +135,44 @@ class Lobby(models.Model):
     u"""クイズ全体の進行制御や，参加者の管理を行う"""
     quiz_series = models.ForeignKey(QuizSeries)
     players = models.ManyToManyField(Participant, null=True, blank=True)
-    active_quiz = models.ForeignKey(Quiz, null=True, blank=True)
     started_time = models.DateTimeField(null=True, blank=True)
     finished_time = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
         return u'Lobby %d' % self.id
+
+    @property
+    def status(self):
+        if self.active_quiz is None:
+            if self.started_time is None:
+                return u'Ready'
+            else:
+                return u'Closed'
+        else:
+            return u'Active'
+
+    @property
+    def can_open(self):
+        return len(self.quiz_series) > 0 and \
+               self.active_quiz is None and \
+               self.started_time is None
+
+    def open(self):
+        if self.can_open:
+            self.quiz_series.go_next_quiz()
+            self.started_time = datetime.now()
+            self.save()
+        else:
+            raise RuntimeError('Cannot open')
+
+    def go_next_quiz(self):
+        self.quiz_series.go_next_quiz()
+        if self.active_quiz is None:
+            self.finished_time = datetime.now()  # finished
+
+    @property
+    def active_quiz(self):
+        return self.quiz_series.active_quiz
+
 
 

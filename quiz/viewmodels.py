@@ -97,21 +97,55 @@ class ViewLobby(TemplateView):
     def get_context_data(self, **kw):
         uid = self.request.session['uid']
         participant = Participant.objects.get(pk=uid)
-        kw.update(participant=participant)
+        lobby = Lobby.objects.get(pk=kw['lobby_id'])
+        quiz_body = lobby.active_quiz.body
+        kw.update(
+            participant=participant,
+            lobby=lobby,
+            quiz_content=render(
+                self.request,
+                'quiz/quiz/view.html',
+                {
+                    'quiz': quiz_body,
+                    'choices': quiz_body.answerchoice_set,
+                })
+        )
         return kw
 
     def get(self, request, *args, **kwargs):
         try:
-            return self.render_to_response(self.get_context_data())
+            return self.render_to_response(
+                self.get_context_data(
+                    lobby_id=kwargs['pk']
+                )
+            )
         except KeyError:
             return redirect('participant_register')
 
 
-class ControlLobby(TemplateView):
+class ControlLobby(View):
     template_name = 'quiz/lobby/control.html'
 
     def get_context_data(self, **kw):
         return kw
+
+    def get(self, req, *args, **kw):
+        lobby = Lobby.objects.get(pk=kw['pk'])
+        return render(req, self.template_name, {
+            'lobby': lobby,
+        })
+
+    def post(self, req, *args, **kw):
+        lobby = Lobby.objects.get(pk=kw['pk'])
+        command = kw['command']
+        if command == 'activate':
+            lobby.open()
+            return JsonResponse({'status': 'OK'})
+        elif command == 'next':
+            lobby.go_next_quiz()
+            return JsonResponse({'status': 'OK'})
+        else:
+            return JsonResponse({'status': 'Error', 'msg': 'Unknown command'})
 
 
 class ActiveLobbyView(View):

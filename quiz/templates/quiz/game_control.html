@@ -18,5 +18,25 @@
 {% block content %}
   <h3>Game control</h3>
   <h3>DEBUG</h3>
-  <button id="start-default-robby" class="btn btn-default">Start default robby</button>
+  <table class="table">
+    <thead>
+    <tr>
+      <th>Robby ID</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for lobby in lobbies %}
+      <tr>
+        <td>{{ lobby.id }}</td>
+        <td>{{ lobby.status }}</td>
+      <td>
+        <a href="{% url 'lobby_show' lobby.pk %}" class="btn btn-primary lobby-show">Show</a>
+        <a href="{% url 'lobby_control' lobby.pk %}" class="btn btn-info">Control</a>
+      </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}

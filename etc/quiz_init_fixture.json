@@ -81,6 +81,7 @@
       1, 
       2
     ], 
+    "active_quiz": null,
     "filp_interval_sec": 0.0, 
     "scoring_type": "CHOICE"
   }
@@ -92,7 +93,6 @@
     "started_time": null, 
     "quiz_series": 1, 
     "finished_time": null, 
-    "active_quiz": null, 
     "players": []
   }
 }

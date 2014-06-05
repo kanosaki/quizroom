@@ -1,22 +1,9 @@
-{% extends "quiz/base.html" %}
-
-{% block title %}Users - Quizroom{% endblock %}
-{% block page_title %}Users{% endblock %}
-
-{% block content %}
-  <table class="table">
-    <tr>
-      <th>ID</th>
-      <td>{{ object.id }}</td>
-    </tr>
-    <tr>
-      <th>Question</th>
-      <td>{{ object.question }}</td>
-    </tr>
-  </table>
-  {% if object.is_active %}
-    <button class="btn btn-primary">Submit Answer</button>
-  {% endif %}
-  <button class="btn">Edit</button>
-  <button class="btn btn-danger">Delete</button>
-{% endblock %}
+<h3>{{ quiz.caption }}</h3>
+<div id="quiz-content-container">
+  {{ quiz.content }}
+</div>
+<div>
+  {% for choice in choices %}
+    {{ choice.content }}
+  {% endfor %}
+</div>
