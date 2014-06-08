@@ -2,6 +2,7 @@ from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView  # , DeleteView
 from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView, View
+from django.utils.safestring import mark_safe
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.core.urlresolvers import reverse_lazy
@@ -98,17 +99,13 @@ class ViewLobby(TemplateView):
         uid = self.request.session['uid']
         participant = Participant.objects.get(pk=uid)
         lobby = Lobby.objects.get(pk=kw['lobby_id'])
+
         quiz_body = lobby.active_quiz.body
         kw.update(
             participant=participant,
             lobby=lobby,
-            quiz_content=render(
-                self.request,
-                'quiz/quiz/view.html',
-                {
-                    'quiz': quiz_body,
-                    'choices': quiz_body.answerchoice_set,
-                })
+            quiz=quiz_body,
+            choices=quiz_body.answerchoice_set.all(),
         )
         return kw
 
@@ -137,15 +134,17 @@ class ControlLobby(View):
 
     def post(self, req, *args, **kw):
         lobby = Lobby.objects.get(pk=kw['pk'])
-        command = kw['command']
+        command = req.POST['command']
         if command == 'activate':
-            lobby.open()
-            return JsonResponse({'status': 'OK'})
+            lobby.start(force=True)
+            control.active_lobby.set(lobby.pk)
+        elif command == 'start':
+            lobby.start_quiz()
         elif command == 'next':
             lobby.go_next_quiz()
-            return JsonResponse({'status': 'OK'})
         else:
             return JsonResponse({'status': 'Error', 'msg': 'Unknown command'})
+        return JsonResponse({'status': 'OK'})
 
 
 class ActiveLobbyView(View):

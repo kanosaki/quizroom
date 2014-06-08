@@ -2,6 +2,30 @@
 
 {% block title %}Quizroom{% endblock %}
 
+{% block page_js %}
+  <script type="text/javascript">
+    $(document).ready(function () {
+      var control_url = "{% url 'lobby_control' lobby.pk %}";
+      $("#activate-lobby").click(function () {
+        $.post(control_url, {'command': 'activate'},
+                function (data) {
+                  alert(data);
+                }
+        );
+      });
+      $("#next-quiz").click(function () {
+        $.post(control_url, {'command': 'next'},
+                function (data) {
+                  alert(data);
+                }
+        );
+      });
+    });
+  </script>
+{% endblock %}
+
 {% block content %}
   <h3>Lobby control</h3>
+  <button id="activate-lobby" class="btn btn-default">Open Lobby</button>
+  <button id="next-quiz" class="btn btn-default">Next Quiz</button>
 {% endblock %}

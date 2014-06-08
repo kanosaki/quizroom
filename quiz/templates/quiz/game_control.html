@@ -11,6 +11,14 @@
                   alert(data);
                 });
       });
+
+      $(".lobby-start").click(function(e){
+        var lobby_pk = $(e.target).data('lobby-pk');
+        $.post('/lobby/control/' + lobby_pk, {'command': 'activate'},
+                function (data) {
+                  alert(data);
+                });
+      });
     });
   </script>
 {% endblock %}
@@ -21,7 +29,7 @@
   <table class="table">
     <thead>
     <tr>
-      <th>Robby ID</th>
+      <th>Lobby ID</th>
       <th>Status</th>
       <th>Actions</th>
     </tr>
@@ -32,8 +40,9 @@
         <td>{{ lobby.id }}</td>
         <td>{{ lobby.status }}</td>
       <td>
-        <a href="{% url 'lobby_show' lobby.pk %}" class="btn btn-primary lobby-show">Show</a>
+        <a href="{% url 'lobby_show' lobby.pk %}" class="btn btn-primary">Show</a>
         <a href="{% url 'lobby_control' lobby.pk %}" class="btn btn-info">Control</a>
+        <button class="btn btn-info lobby-start" data-lobby-pk="{{ lobby.pk }}">Start</button>
       </td>
       </tr>
     {% endfor %}

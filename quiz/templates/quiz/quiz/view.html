@@ -1,9 +1,9 @@
 <h3>{{ quiz.caption }}</h3>
 <div id="quiz-content-container">
-  {{ quiz.content }}
+  {{ quiz.content|safe }}
 </div>
 <div>
   {% for choice in choices %}
-    {{ choice.content }}
+    {{ choice.content|safe }}
   {% endfor %}
 </div>

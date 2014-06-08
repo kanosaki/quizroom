@@ -93,14 +93,22 @@ class QuizSeries(models.Model):
         help_text=u"何秒で次の問題へ送るかを秒単位で指定します．0以下にすると自動で次の問題へ送りません",
     )
 
+    def ordered_quiz(self):
+        return self.quizes.order_by('order')
+
+    def initialize_quizseries(self):
+        first_quiz = self.ordered_quiz().first()
+        self.active_quiz = first_quiz
+        self.save()
+
     def go_next_quiz(self):
-        ordered_quizes = list(self.quizes.order_by('order'))
+        ordered_quizes = list(self.ordered_quiz())
         next_index = ordered_quizes.index(self.active_quiz) + 1
         if next_index < len(ordered_quizes) - 1:
             self.active_quiz = ordered_quizes[next_index]
         else:
             self.active_quiz = None
-        self.quiz_series.save()
+        self.save()
 
     def __len__(self):
         return self.quizes.count()
@@ -152,14 +160,14 @@ class Lobby(models.Model):
             return u'Active'
 
     @property
-    def can_open(self):
+    def can_start(self):
         return len(self.quiz_series) > 0 and \
                self.active_quiz is None and \
                self.started_time is None
 
-    def open(self):
-        if self.can_open:
-            self.quiz_series.go_next_quiz()
+    def start(self, force=False):
+        if self.can_start or force:
+            self.quiz_series.initialize_quizseries()
             self.started_time = datetime.now()
             self.save()
         else:
