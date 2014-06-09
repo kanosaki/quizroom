@@ -11,7 +11,7 @@ from quiz.forms import ParticipantForm, QuizForm
 from quiz.models import Participant, Quiz, Lobby
 from quiz import control
 import utils
-from utils import json_api
+from utils import api_guard
 
 
 # ----------------------------------
@@ -130,17 +130,22 @@ class ControlLobby(View):
             'lobby': lobby,
         })
 
-    @json_api
+    @api_guard
     def post(self, req, *args, **kw):
         lobby = Lobby.objects.get(pk=kw['pk'])
         command = req.POST['command']
         if command == 'activate':
-            lobby.start()
+            lobby.start(force=True)
         elif command == 'next':
-            lobby.go_next_quiz()
+            if lobby.is_finished:
+                return utils.JsonStatuses.failed('Already closed!')
+            else:
+                lobby.go_next_quiz()
         else:
-            raise Exception('Unknown command')
-        return 'Question is now %s' % lobby.active_quiz.body.caption
+            return utils.JsonStatuses.failed('Unknown command!')
+        return utils.JsonStatuses.ok(
+            message='Question is now %s' % lobby.active_quiz.body.caption,
+        )
 
 
 class ActiveLobbyView(View):

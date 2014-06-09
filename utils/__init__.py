@@ -1,4 +1,5 @@
 import json
+import traceback
 
 from django.http import HttpResponse
 
@@ -12,23 +13,31 @@ class JsonResponse(HttpResponse):
 
 class JsonStatuses(object):
     @staticmethod
-    def ok(data=None):
-        data = data or {}
-        data.update(status='ok')
-        return JsonResponse(data)
+    def ok(**kw):
+        kw.update(status='ok')
+        return JsonResponse(kw)
 
     @staticmethod
-    def failed(msg):
-        return JsonResponse({
-            'status': 'failed',
-            'message': unicode(msg),
-        })
+    def failed(msg, **kw):
+        kw.update(status='failed', message=msg)
+        return JsonResponse(kw)
 
 
 def json_api(f):
     def wrapper(*args, **kw):
         try:
-            return JsonStatuses.ok(f(*args, **kw))
+            return JsonStatuses.ok(data=f(*args, **kw))
         except Exception, e:
+            traceback.print_exc()
             return JsonStatuses.failed(e)
+    return wrapper
+
+
+def api_guard(f):
+    def wrapper(*args, **kw):
+        try:
+            return f(*args, **kw)
+        except Exception, e:
+            traceback.print_exc()
+            return HttpResponse(unicode(e))
     return wrapper

@@ -114,7 +114,7 @@ class QuizSeries(models.Model):
     def ordered_quiz(self):
         return self.quizes.order_by('order')
 
-    def initialize_quizseries(self):
+    def initialize(self):
         first_quiz = self.ordered_quiz().first()
         self.active_quiz = first_quiz
         self.save()
@@ -185,8 +185,9 @@ class Lobby(models.Model):
 
     def start(self, force=False):
         if self.can_start or force:
-            self.quiz_series.initialize_quizseries()
+            self.quiz_series.initialize()
             self.started_time = timezone.now()
+            self.finished_time = None
             self.save()
         else:
             raise RuntimeError('Cannot open')
@@ -195,6 +196,10 @@ class Lobby(models.Model):
         self.quiz_series.go_next_quiz()
         if self.active_quiz is None:
             self.finished_time = timezone.now()  # finished
+
+    @property
+    def is_finished(self):
+        return self.finished_time is not None
 
     @property
     def active_quiz(self):
