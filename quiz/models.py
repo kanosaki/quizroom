@@ -196,6 +196,7 @@ class Lobby(models.Model):
         self.quiz_series.go_next_quiz()
         if self.active_quiz is None:
             self.finished_time = timezone.now()  # finished
+            self.save()
 
     @property
     def is_finished(self):
