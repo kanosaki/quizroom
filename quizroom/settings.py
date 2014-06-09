@@ -25,7 +25,7 @@ def get_secret_key(secret_key_filepath=SECRET_KEY_FILE):
     try:
         with open(secret_key_filepath, 'r') as f:
             config = json.load(f)
-            return config['seacret_key']
+            return config['secret_key']
     except (IOError, KeyError):
         if not DEBUG:
             raise ImproperlyConfigured()
