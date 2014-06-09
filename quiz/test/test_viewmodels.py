@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.test import TestCase, Client
+
 from quiz.control import active_lobby
 
 
@@ -44,7 +45,10 @@ class ControlLobbyTest(TestCase):
         self.assertEqual(lobby.active_quiz, None)
 
         res = c.post(url, {'command': 'activate'})
-        self.assertJSONEqual(res.content, {u'status': u'ok'})
+        self.assertJSONEqual(res.content, {
+            u'status': u'ok',
+            u'message': u'Question is now First quiz',
+        })
         lobby = active_lobby.get()
         self.assertEqual(lobby.pk, lobby_pk)
         self.assertIsNotNone(lobby.active_quiz)
@@ -52,7 +56,10 @@ class ControlLobbyTest(TestCase):
         self.assertEqual(lobby.active_quiz.body.caption, 'First quiz')
 
         res = c.post(url, {'command': 'next'})
-        self.assertJSONEqual(res.content, {u'status': u'ok'})
+        self.assertJSONEqual(res.content, {
+            u'status': u'ok',
+            u'message': u'Question is now Second quiz',
+            })
         lobby = active_lobby.get()
         self.assertEqual(lobby.pk, lobby_pk)
         self.assertEqual(lobby.active_quiz.body.caption, 'Second quiz')

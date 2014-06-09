@@ -4,7 +4,7 @@ from django.utils import timezone
 
 from django.test import TestCase
 
-from quiz.models import Lobby
+from quiz.models import Lobby, KVS
 from quiz.control import active_lobby
 
 
@@ -39,3 +39,13 @@ class TestLobby(TestCase):
         self.assertEqual(lobby.active_quiz.body.caption, "Second quiz")
 
 
+class TestKVS(TestCase):
+
+    def test_kvs(self):
+        with self.assertRaises(KeyError):
+            KVS.get('hogehoge')
+
+        KVS.put('hoge', 'fuga')
+        self.assertEqual('fuga', KVS.get('hoge'))
+        KVS.put('hoge', 'foo')
+        self.assertEqual('foo', KVS.get('hoge'))
