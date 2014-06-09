@@ -17,7 +17,10 @@ class ActiveLobbyViewTest(TestCase):
         self.assertRegexpMatches(res.content, r'現在開催されているセッションはありません')
 
         res = c.post(url, {'id': 'default'})
-        self.assertJSONEqual(res.content, {u'status': u'ok'})
+        self.assertJSONEqual(res.content, {
+            u'status': u'ok',
+            u'message': u'Active lobby set to Lobby 1',
+            })
 
         active_lobby_id = active_lobby.get().pk
         res = c.get(url)
@@ -32,7 +35,10 @@ class ControlLobbyTest(TestCase):
         control_url = '/lobby/now'
         c = Client()
         res = c.post(control_url, {'id': 'default'})
-        self.assertJSONEqual(res.content, {u'status': u'ok'})
+        self.assertJSONEqual(res.content, {
+            u'status': u'ok',
+            u'message': u'Active lobby set to Lobby 1',
+        })
 
     def test_control_lobby(self):
         lobby = active_lobby.get()
@@ -59,7 +65,7 @@ class ControlLobbyTest(TestCase):
         self.assertJSONEqual(res.content, {
             u'status': u'ok',
             u'message': u'Question is now Second quiz',
-            })
+        })
         lobby = active_lobby.get()
         self.assertEqual(lobby.pk, lobby_pk)
         self.assertEqual(lobby.active_quiz.body.caption, 'Second quiz')
