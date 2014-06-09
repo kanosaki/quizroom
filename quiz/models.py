@@ -205,5 +205,20 @@ class Lobby(models.Model):
     def active_quiz(self):
         return self.quiz_series.active_quiz
 
+    def quizes(self):
+        for index, quiz in enumerate(self.quiz_series.ordered_quiz()):
+            yield {
+                'index': str(index),
+                'caption': quiz.body.caption,
+                'is_active': quiz == self.active_quiz,
+            }
+
+    def participants(self):
+        for p in self.players.all():
+            yield {
+                'name': p.name,
+            }
+
+
 
 
