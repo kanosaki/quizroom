@@ -7,18 +7,10 @@
     $(document).ready(function () {
       var control_url = "{% url 'lobby_control' lobby.pk %}";
       $("#activate-lobby").click(function () {
-        $.post(control_url, {'command': 'activate'},
-                function (data) {
-                  alert(data);
-                }
-        );
+        $.post(control_url, {'command': 'activate'}, window.quiz.handle_ajax_response);
       });
       $("#next-quiz").click(function () {
-        $.post(control_url, {'command': 'next'},
-                function (data) {
-                  alert(data);
-                }
-        );
+        $.post(control_url, {'command': 'next'}, window.quiz.handle_ajax_response);
       });
     });
   </script>

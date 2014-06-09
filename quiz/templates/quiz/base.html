@@ -19,8 +19,9 @@
   <script type="text/javascript" src="{% static "underscore/underscore.js" %}"></script>
   <script type="text/javascript" src="{% static "bootstrap/dist/js/bootstrap.min.js" %}"></script>
   <script type="text/javascript" src="{% static "jquery-cookie/jquery.cookie.js" %}"></script>
-  <script type="text/javascript" src="{% static "quiz/common.js" %}"></script>
-
+  <script type="text/javascript" src="{% static "quiz/js/common.js" %}"></script>
+  <script type="text/javascript" src="{% static "quiz/js/notifIt.js" %}"></script>
+  <link href="{% static "quiz/css/notifIt.css" %}" rel="stylesheet">
 </head>
 <body>
 <!-- NAVBAR -->
@@ -45,14 +46,15 @@
     <!--/.nav-collapse -->
   </div>
 </div>
-
 <!-- CONTENTS -->
 <div class="container">
-  {% block content %}
-    [[NOCONTENT]]
-  {% endblock %}
+  <div id="content">
+    {% block content %}
+      [[NOCONTENT]]
+    {% endblock %}
+  </div>
 </div>
-
+<script type="text/javascript" src="{% static "quiz/js/base.js" %}"></script>
 {% block page_js %}{% endblock %}
 </body>
 </html>

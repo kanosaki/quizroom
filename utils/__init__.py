@@ -12,13 +12,23 @@ class JsonResponse(HttpResponse):
 
 class JsonStatuses(object):
     @staticmethod
-    def ok():
-        return JsonResponse({'status': 'ok'})
+    def ok(data=None):
+        data = data or {}
+        data.update(status='ok')
+        return JsonResponse(data)
 
     @staticmethod
     def failed(msg):
         return JsonResponse({
             'status': 'failed',
-            'message': msg,
+            'message': unicode(msg),
         })
 
+
+def json_api(f):
+    def wrapper(*args, **kw):
+        try:
+            return JsonStatuses.ok(f(*args, **kw))
+        except Exception, e:
+            return JsonStatuses.failed(e)
+    return wrapper
