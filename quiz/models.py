@@ -4,6 +4,20 @@ from django.db import models
 import django.contrib.auth
 
 
+class KVS(models.Model):
+    key = models.CharField(primary_key=True, max_length=100)
+    value = models.CharField(max_length=1000)
+
+    @staticmethod
+    def get(key):
+        return KVS.objects.get(pk=key)
+
+    @staticmethod
+    def put(key, value):
+        entry = KVS(key=key, value=value)
+        entry.save()
+
+
 class Quiz(models.Model):
     caption = models.CharField(
         max_length=200,

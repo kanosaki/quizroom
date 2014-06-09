@@ -7,7 +7,6 @@ gevent-websocket==0.9.3
 gnureadline==6.3.3
 greenlet==0.4.2
 ipython==2.1.0
-leveldb==0.193
 pip-tools==0.3.4
 six==1.6.1
 sphinx-me==0.2.1
