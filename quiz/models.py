@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
 from django.db import models
+from django.utils import timezone
 import django.contrib.auth
 
 
@@ -10,7 +10,11 @@ class KVS(models.Model):
 
     @staticmethod
     def get(key):
-        return KVS.objects.get(pk=key)
+        try:
+            return KVS.objects.get(pk=key).value
+        except KVS.DoesNotExist:
+            raise KeyError(key)
+
 
     @staticmethod
     def put(key, value):
@@ -118,7 +122,7 @@ class QuizSeries(models.Model):
     def go_next_quiz(self):
         ordered_quizes = list(self.ordered_quiz())
         next_index = ordered_quizes.index(self.active_quiz) + 1
-        if next_index < len(ordered_quizes) - 1:
+        if next_index <= len(ordered_quizes) - 1:
             self.active_quiz = ordered_quizes[next_index]
         else:
             self.active_quiz = None
@@ -182,7 +186,7 @@ class Lobby(models.Model):
     def start(self, force=False):
         if self.can_start or force:
             self.quiz_series.initialize_quizseries()
-            self.started_time = datetime.now()
+            self.started_time = timezone.now()
             self.save()
         else:
             raise RuntimeError('Cannot open')
@@ -190,7 +194,7 @@ class Lobby(models.Model):
     def go_next_quiz(self):
         self.quiz_series.go_next_quiz()
         if self.active_quiz is None:
-            self.finished_time = datetime.now()  # finished
+            self.finished_time = timezone.now()  # finished
 
     @property
     def active_quiz(self):

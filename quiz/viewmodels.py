@@ -9,8 +9,8 @@ from django.core.urlresolvers import reverse_lazy
 
 from quiz.forms import ParticipantForm, QuizForm
 from quiz.models import Participant, Quiz, Lobby
-from utils import JsonResponse
 from quiz import control
+import utils
 
 
 # ----------------------------------
@@ -123,9 +123,6 @@ class ViewLobby(TemplateView):
 class ControlLobby(View):
     template_name = 'quiz/lobby/control.html'
 
-    def get_context_data(self, **kw):
-        return kw
-
     def get(self, req, *args, **kw):
         lobby = Lobby.objects.get(pk=kw['pk'])
         return render(req, self.template_name, {
@@ -136,15 +133,12 @@ class ControlLobby(View):
         lobby = Lobby.objects.get(pk=kw['pk'])
         command = req.POST['command']
         if command == 'activate':
-            lobby.start(force=True)
-            control.active_lobby.set(lobby.pk)
-        elif command == 'start':
-            lobby.start_quiz()
+            lobby.start()
         elif command == 'next':
             lobby.go_next_quiz()
         else:
-            return JsonResponse({'status': 'Error', 'msg': 'Unknown command'})
-        return JsonResponse({'status': 'OK'})
+            return utils.JsonStatuses.failed('Unknown command')
+        return utils.JsonStatuses.ok()
 
 
 class ActiveLobbyView(View):
@@ -163,7 +157,7 @@ class ActiveLobbyView(View):
             lobby = Lobby.objects.filter(started_time=None).first()
         else:
             lobby = Lobby.objects.get(pk=activating_id)
-        control.active_lobby.set(lobby.pk)
-        return JsonResponse({'status': 'OK'})
+        control.active_lobby.set(lobby)
+        return utils.JsonStatuses.ok()
 
 

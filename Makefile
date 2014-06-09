@@ -20,4 +20,4 @@ resetdb_test:
 	rm -fr db/control.leveldb
 	$(MANAGE) syncdb
 	$(MANAGE) loaddata etc/users.json
-	$(MANAGE) loaddata etc/quiz_init_fixture.json
+	$(MANAGE) loaddata quiz/fixtures/init_fixture.json

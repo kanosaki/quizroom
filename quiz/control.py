@@ -19,8 +19,8 @@ class LobbyControl(object):
         except KeyError:
             return None
 
-    def set(self, lobby_pk):
-        KVS.put(self.active_lobby_key, lobby_pk)
+    def set(self, lobby):
+        KVS.put(self.active_lobby_key, lobby.pk)
 
     # TODO: クライアントに参加者一覧の更新を通知したり
     def trigger_client_joined(self):
