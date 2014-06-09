@@ -6,18 +6,16 @@
   <script type="text/javascript">
     $(document).ready(function () {
       $("#start-default-robby").click(function () {
-        $.post('{% url 'lobby_now' %}', {'id': 'default'},
-                function (data) {
-                  alert(data);
-                });
+        $.post('{% url 'lobby_now' %}',
+                {'id': 'default'},
+                window.quiz.handle_ajax_response);
       });
 
       $(".lobby-start").click(function(e){
         var lobby_pk = $(e.target).data('lobby-pk');
-        $.post('/lobby/control/' + lobby_pk, {'command': 'activate'},
-                function (data) {
-                  alert(data);
-                });
+        $.post('{% url 'lobby_now' %}',
+                {'id': lobby_pk},
+                window.quiz.handle_ajax_response);
       });
     });
   </script>

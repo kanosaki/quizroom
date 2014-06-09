@@ -165,6 +165,6 @@ class ActiveLobbyView(View):
         else:
             lobby = Lobby.objects.get(pk=activating_id)
         control.active_lobby.set(lobby)
-        return utils.JsonStatuses.ok()
+        return utils.JsonStatuses.ok(message='Active lobby set to Lobby %d' % lobby.pk)
 
 
