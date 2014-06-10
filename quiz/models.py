@@ -33,7 +33,7 @@ class Quiz(models.Model):
                   u"それ以外の場合は問題文ディレクトリよりファイルを探索し，見つかったファイルをレンダリングします",
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Quiz %d(%s)' % (self.id, self.caption)
 
 
@@ -50,7 +50,7 @@ class AnswerChoice(models.Model):
                   u"それ以外の場合は問題文ディレクトリよりファイルを探索し，見つかったファイルをレンダリングします",
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Answer for Quiz "%s" score %d' % (self.quiz.caption, self.base_score)
 
 
@@ -74,7 +74,7 @@ class QuizEntry(models.Model):
         help_text=u"最後の問題は配点100倍！！とかやりたいときのために",
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Quiz Series entry %d' % self.id
 
 
@@ -131,7 +131,7 @@ class QuizSeries(models.Model):
     def __len__(self):
         return self.quizes.count()
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Quiz Series %d' % self.id
 
 
@@ -144,7 +144,7 @@ class Participant(models.Model):
     session_key = models.CharField(max_length=128)
     django_user = models.ForeignKey(django.contrib.auth.get_user_model(), null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Participant %s' % self.name
 
 
@@ -153,7 +153,7 @@ class UserAnswer(models.Model):
     choice = models.IntegerField()
     user = models.ForeignKey(Participant)
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Ans %s' % self.selection
 
 
@@ -164,7 +164,7 @@ class Lobby(models.Model):
     started_time = models.DateTimeField(null=True, blank=True)
     finished_time = models.DateTimeField(null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return u'Lobby %d' % self.id
 
     @property

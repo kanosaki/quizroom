@@ -10,6 +10,10 @@ class JsonResponse(HttpResponse):
         super(JsonResponse, self).__init__(json.dumps(content), mimetype=mimetype,
                                            status=status, content_type=content_type)
 
+    # For testing
+    def deserialize(self):
+        return self.content.decode('ascii')
+
 
 class JsonStatuses(object):
     @staticmethod
@@ -27,7 +31,7 @@ def json_api(f):
     def wrapper(*args, **kw):
         try:
             return JsonStatuses.ok(data=f(*args, **kw))
-        except Exception, e:
+        except Exception as e:
             traceback.print_exc()
             return JsonStatuses.failed(e)
     return wrapper
@@ -37,7 +41,7 @@ def api_guard(f):
     def wrapper(*args, **kw):
         try:
             return f(*args, **kw)
-        except Exception, e:
+        except Exception as e:
             traceback.print_exc()
             return HttpResponse(unicode(e))
     return wrapper

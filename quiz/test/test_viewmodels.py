@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
-
+import json
 from django.test import TestCase, Client
 
 from quiz.control import active_lobby
+
+
+def decode_json(response):
+    b = response.content
+    return json.loads(b.decode('ascii'))
 
 
 class ActiveLobbyViewTest(TestCase):
@@ -14,18 +19,15 @@ class ActiveLobbyViewTest(TestCase):
         c = Client()
         res = c.get(url)
         self.assertEqual(res.status_code, 200)  # No Lobby page
-        self.assertRegexpMatches(res.content, r'現在開催されているセッションはありません')
+        self.assertRegex(res.content.decode('utf-8'), r'現在開催されているセッションはありません')
 
-        res = c.post(url, {'id': 'default'})
-        self.assertJSONEqual(res.content, {
-            u'status': u'ok',
-            u'message': u'Active lobby set to Lobby 1',
-            })
+        res = decode_json(c.post(url, {'id': 'default'}))
+        self.assertEqual(res['status'], 'ok')
 
         active_lobby_id = active_lobby.get().pk
         res = c.get(url)
         self.assertEqual(res.status_code, 302)  # Moved
-        self.assertRegexpMatches(res.url, '/lobby/%d' % active_lobby_id)
+        self.assertRegex(res.url, '/lobby/%d' % active_lobby_id)
 
 
 class ControlLobbyTest(TestCase):
@@ -34,11 +36,8 @@ class ControlLobbyTest(TestCase):
     def setUp(self):
         control_url = '/lobby/now'
         c = Client()
-        res = c.post(control_url, {'id': 'default'})
-        self.assertJSONEqual(res.content, {
-            u'status': u'ok',
-            u'message': u'Active lobby set to Lobby 1',
-        })
+        res = decode_json(c.post(control_url, {'id': 'default'}))
+        self.assertEqual(res['status'], 'ok')
 
     def test_control_lobby(self):
         lobby = active_lobby.get()
@@ -50,22 +49,18 @@ class ControlLobbyTest(TestCase):
         self.assertEqual(lobby.can_start, True)
         self.assertEqual(lobby.active_quiz, None)
 
-        res = c.post(url, {'command': 'activate'})
-        self.assertJSONEqual(res.content, {
-            u'status': u'ok',
-            u'message': u'Question is now First quiz',
-        })
+        res = decode_json(c.post(url, {'command': 'activate'}))
+        self.assertEqual(res['status'], 'ok')
+
         lobby = active_lobby.get()
         self.assertEqual(lobby.pk, lobby_pk)
         self.assertIsNotNone(lobby.active_quiz)
         self.assertFalse(lobby.can_start)
         self.assertEqual(lobby.active_quiz.body.caption, 'First quiz')
 
-        res = c.post(url, {'command': 'next'})
-        self.assertJSONEqual(res.content, {
-            u'status': u'ok',
-            u'message': u'Question is now Second quiz',
-        })
+        res = decode_json(c.post(url, {'command': 'next'}))
+        self.assertEqual(res['status'], 'ok')
+
         lobby = active_lobby.get()
         self.assertEqual(lobby.pk, lobby_pk)
         self.assertEqual(lobby.active_quiz.body.caption, 'Second quiz')
