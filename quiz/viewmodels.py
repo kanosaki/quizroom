@@ -143,9 +143,12 @@ class ControlLobby(View):
                 lobby.go_next_quiz()
         else:
             return utils.JsonStatuses.failed('Unknown command!')
-        return utils.JsonStatuses.ok(
-            message='Question is now %s' % lobby.active_quiz.body.caption,
-        )
+        if lobby.is_finished:
+            return utils.JsonStatuses.ok(message='Lobby closed!')
+        else:
+            return utils.JsonStatuses.ok(
+                message='Question is now %s' % lobby.active_quiz.body.caption,
+            )
 
 
 class ActiveLobbyView(View):
