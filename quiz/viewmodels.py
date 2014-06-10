@@ -2,14 +2,14 @@ from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView  # , DeleteView
 from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView, View
-from django.utils.safestring import mark_safe
-from django.http import HttpResponse
 from django.shortcuts import redirect, render
-from django.core.urlresolvers import reverse_lazy
 
 from quiz.forms import ParticipantForm, QuizForm
 from quiz.models import Participant, Quiz, Lobby
 from quiz import control
+
+import quizhub.lobby
+
 import utils
 from utils import api_guard
 
@@ -143,6 +143,7 @@ class ControlLobby(View):
                 lobby.go_next_quiz()
         else:
             return utils.JsonStatuses.failed('Unknown command!')
+        quizhub.lobby.lobby_hub.request_update()
         if lobby.is_finished:
             return utils.JsonStatuses.ok(message='Lobby closed!')
         else:

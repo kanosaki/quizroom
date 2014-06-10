@@ -119,3 +119,9 @@ BOWER_INSTALLED_APPS = (
 
 CONTROL_LEVELDB = os.path.join(BASE_DIR, 'db', 'control.leveldb')
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': '/var/tmp/django_cache',
+    }
+}
