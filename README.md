@@ -18,22 +18,37 @@ Pythonを入れたら，virtualenvを作っておくのがおすすめ
     $ cd quizroom
     ```
 
-3. 依存ライブラリを入れる
+3. 初期設定
 	
 	```sh
-    $ pip install -r etc/requirements.txt
-    ```
-
-4. テスト環境用初期設定
-	
-	```sh
-    $ make resetdb_test  # DBを初期化
-    # ユーザー作る？みたいに聞かれるので no で
-    $ make bower_update  # 使っているJavaScript関連のライブラリを準備
+    $ make init
+    # ユーザー作る？みたいに聞かれるのでおのおの管理者ユーザーを
+    # 作るといいと思う 
 	```
 	
-5. 実行
+4. 実行
 
 	```sh
     $ ./run.py
     ```
+
+URLの構造
+---------
+### Djangoが処理するもの
+`/lobby/{{lobby_id}}`
+出題したりするメインのページ
+
+`/lobby/control/{{lobby_id}}`
+ロビー制御用のページ
+
+`/user/`
+ユーザーを登録したり
+
+`/admin`
+Django組み込みのDBいじるページ
+
+`/control`
+
+
+### Tornadoが処理するもの
+`/ws` -- WebSocket関連

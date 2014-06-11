@@ -5,6 +5,15 @@ MANAGE = ./manage.py
 run:
 	$(MANAGE) runserver
 
+.PHONY: init
+init:
+	pip install -r etc/requirements.txt
+	$(MANAGE) bower_install
+	$(MANAGE) collectstatic
+	$(MANAGE) syncdb
+	$(MANAGE) loaddata etc/users.json
+	$(MANAGE) loaddata quiz/fixtures/init_fixture.json
+
 .PHONY: bower_update
 bower_update:
 	$(MANAGE) bower update
