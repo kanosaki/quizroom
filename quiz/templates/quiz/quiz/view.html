@@ -1,9 +1,17 @@
-<h3>{{ quiz.caption }}</h3>
-<div id="quiz-content-container">
-  {{ quiz.content|safe }}
+<div class="jumbotron">
+    <h2>{{ quiz.caption }}</h2>
+    <div id="quiz-content-container">
+      <p>{{ quiz.content|safe}}</p>
+    </div>
 </div>
+
 <div>
-  {% for choice in choices %}
-    {{ choice.content|safe }}
-  {% endfor %}
+  <form action="address" method="post" accept-charset="utf-8">
+    {% for choice in choices %}
+      <div class="row">
+        <div class="col-xs-1"><h3>{{ forloop.counter }}:</h3></div>
+        <div class="col-xs-11"><button type="submit" name="answer" value={{ forloop.counter }} class="btn btn-primary btn-large btn-block" >{{ choice.content|safe }}</button></div>
+      </div>
+    {% endfor %}
+  </form>
 </div>
