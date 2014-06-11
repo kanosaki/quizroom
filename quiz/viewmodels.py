@@ -117,7 +117,7 @@ class ViewLobby(TemplateView):
                     lobby_id=kwargs['pk']
                 )
             )
-        except KeyError:
+        except Participant.DoesNotExist:
             return redirect('participant_register')
 
 
