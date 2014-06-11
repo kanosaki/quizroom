@@ -28,6 +28,7 @@ Pythonを入れたら，virtualenvを作っておくのがおすすめ
 	
 	```sh
     $ make resetdb_test  # DBを初期化
+    # ユーザー作る？みたいに聞かれるので no で
     $ make bower_update  # 使っているJavaScript関連のライブラリを準備
 	```
 	
