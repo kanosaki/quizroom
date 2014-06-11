@@ -5,4 +5,5 @@
 {% block content %}
   <h4>{{ user.name }}</h4>
   <a href="{% url 'lobby_now' %}" class="btn btn-primary">現在のゲームに参加</a>
+  <a href="{% url 'game_control' %}" class="btn btn-default">管理ページ</a>
 {% endblock %}
