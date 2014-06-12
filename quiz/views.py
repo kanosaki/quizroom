@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
-from django.utils.safestring import mark_safe
 import django.core.exceptions
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound
+from django.conf import settings
 
 import utils
 from quiz.models import Lobby, Quiz, Participant, UserAnswer
@@ -38,3 +38,10 @@ def game_control(req):
 @signin_required
 def mypage(req, user):
     return render(req, 'quiz/mypage.html', {'user': user})
+
+
+def unittest(req):
+    if settings.DEBUG:
+        return render(req, 'quiz/unittest.html')
+    else:
+        return HttpResponseNotFound()

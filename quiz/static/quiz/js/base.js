@@ -1,32 +1,50 @@
 // quiz/base.html scripts
 
 (function () {
-    window.quiz = window.quiz || {};
-
-    window.quiz.notify_info = function (html) {
-        notif({
-            type: "info",
-            msg: html,
-            width: "all",
-            position: "center"
-        });
+    // ------------------------------------------
+    // Notifications
+    // ------------------------------------------
+    var Notify = function () {
     };
 
-    window.quiz.notify_error = function (html) {
-        notif({
-            type: "error",
-            msg: html,
-            position: "center",
-            width: "all",
-            autohide: false
-        });
-    };
-
-    window.quiz.handle_ajax_response = function (res) {
-        if (res.status != 'ok') {
-            window.quiz.notify_error(res.message);
-        } else if (res.status == 'ok' && res.message) {
-            window.quiz.notify_info(res.message);
+    Notify.prototype = {
+        info: function (html) {
+            notif({
+                type: "info",
+                msg: html,
+                width: "all",
+                position: "center"
+            });
+        },
+        error: function (html) {
+            notif({
+                type: "error",
+                msg: html,
+                position: "center",
+                width: "all",
+                autohide: false
+            });
         }
     };
+
+    quiz.notify = new Notify();
+
+    // ------------------------------------------
+    // Ajax utilities
+    // ------------------------------------------
+    quiz.default_ajax_handler = function (res) {
+        if (res.status != 'ok') {
+            quiz.notify.error(res.message);
+        } else if (res.status == 'ok' && res.message) {
+            quiz.notify.info(res.message);
+        }
+    };
+
+    // ------------------------------------------
+    // Navbar
+    // ------------------------------------------
+    // Navbarはテンプレートページ(quiz/base.html)で初期化
+    quiz.Navbar.prototype = {
+
+    }
 })();

@@ -15,12 +15,6 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-  <script type="text/javascript" src="{% static "jquery/dist/jquery.min.js" %}"></script>
-  <script type="text/javascript" src="{% static "underscore/underscore.js" %}"></script>
-  <script type="text/javascript" src="{% static "bootstrap/dist/js/bootstrap.min.js" %}"></script>
-  <script type="text/javascript" src="{% static "jquery-cookie/jquery.cookie.js" %}"></script>
-  <script type="text/javascript" src="{% static "quiz/js/common.js" %}"></script>
-  <script type="text/javascript" src="{% static "quiz/js/notifIt.js" %}"></script>
   <link href="{% static "quiz/css/notifIt.css" %}" rel="stylesheet">
 </head>
 <body>
@@ -38,9 +32,9 @@
     </div>
     <div class="collapse navbar-collapse">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="{% url 'lobby_now' %}">Now</a></li>
-        <li><a href="#about">Ranking</a></li>
-        <li><a href="#contact">Your Answers</a></li>
+        <li id="nav-quiznow"><a href="{% url 'lobby_now' %}">クイズ</a></li>
+        <li id="nav-ranking"><a href="#about">ランキング</a></li>
+        <li id="nav-mypage"><a href="#contact">マイページ</a></li>
       </ul>
     </div>
     <!--/.nav-collapse -->
@@ -54,6 +48,22 @@
     {% endblock %}
   </div>
 </div>
+<!-- Scripts -->
+<script type="text/javascript" src="{% static "jquery/dist/jquery.min.js" %}"></script>
+<script type="text/javascript" src="{% static "underscore/underscore.js" %}"></script>
+<script type="text/javascript" src="{% static "bootstrap/dist/js/bootstrap.min.js" %}"></script>
+<script type="text/javascript" src="{% static "jquery-cookie/jquery.cookie.js" %}"></script>
+<script type="text/javascript" src="{% static "backbone/backbone.js" %}"></script>
+<script type="text/javascript" src="{% static "backbone/backbone.stickit.js" %}"></script>
+<script type="text/javascript" src="{% static "quiz/js/notifIt.js" %}"></script>
+<script type="text/javascript">
+  // Initialize values
+  var quiz = {};
+  quiz.common = {
+    navbar_active: '{{ navbar_active }}',
+  };
+</script>
+<script type="text/javascript" src="{% static "quiz/js/common.js" %}"></script>
 <script type="text/javascript" src="{% static "quiz/js/base.js" %}"></script>
 {% block page_js %}{% endblock %}
 </body>

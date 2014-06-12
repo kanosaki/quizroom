@@ -8,13 +8,13 @@
       var control_url = "{% url 'lobby_control' lobby.pk %}";
       $("#activate-lobby").click(function () {
         $.post(control_url, {'command': 'activate'}, function (data) {
-          window.quiz.handle_ajax_response(data);
+          quiz.default_ajax_handler(data);
           location.reload();
         });
       });
       $("#next-quiz").click(function () {
         $.post(control_url, {'command': 'next'}, function (data) {
-          window.quiz.handle_ajax_response(data);
+          quiz.default_ajax_handler(data);
           location.reload();
         });
       });
@@ -24,8 +24,9 @@
 
 {% block content %}
   <h3>Lobby control</h3>
-  <button id="activate-lobby" class="btn btn-default">Open Lobby</button>
-  <button id="next-quiz" class="btn btn-default">Next Quiz</button>
+  <button id="activate-lobby" class="btn btn-default">ロビー初期化</button>
+  <button id="close-submission" class="btn btn-default">提出締め切り</button>
+  <button id="next-quiz" class="btn btn-default">次の問題へ</button>
   <dl class="dl-horizontal">
     <dt>Start Time</dt>
     {% if lobby.started_time %}

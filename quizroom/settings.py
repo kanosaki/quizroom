@@ -113,10 +113,14 @@ STATICFILES_FINDERS = (
 BOWER_COMPONENTS_ROOT = os.path.join(BASE_DIR, 'components')
 
 BOWER_INSTALLED_APPS = (
+    'backbone',
+    'backbone.stickit',
     'bootstrap',
     'jquery',
     'jquery-cookie',
     'underscore',
+
+    'qunit',
 )
 
 CONTROL_LEVELDB = os.path.join(BASE_DIR, 'db', 'control.leveldb')
