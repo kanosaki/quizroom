@@ -6,12 +6,10 @@
 </div>
 
 <div>
-  <form action="address" method="post" accept-charset="utf-8">
-    {% for choice in choices %}
-      <div class="row">
-        <div class="col-xs-1"><h3>{{ forloop.counter }}:</h3></div>
-        <div class="col-xs-11"><button type="submit" name="answer" value={{ forloop.counter }} class="btn btn-primary btn-large btn-block" >{{ choice.content|safe }}</button></div>
-      </div>
-    {% endfor %}
-  </form>
+  {% for choice in choices %}
+    <div class="row ans-row">
+      <div class="col-xs-2 ans-num"><h3>{{ forloop.counter }}:</h3></div>
+      <div class="col-xs-10"><button type="submit" name="answer" value={{ forloop.counter }} class="btn btn-primary btn-lg btn-block" >{{ choice.content|safe }}</button></div>
+    </div>
+  {% endfor %}
 </div>
