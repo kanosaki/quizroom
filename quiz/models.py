@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os.path
 from django.db import models
 from django.utils import timezone
 import django.contrib.auth
@@ -32,6 +33,12 @@ class Quiz(models.Model):
         help_text=u"問題文本体．'<','http://','https://'で始まる文字列の時，文字列をそのままレンダリングします"
                   u"それ以外の場合は問題文ディレクトリよりファイルを探索し，見つかったファイルをレンダリングします",
     )
+
+    def get_content(self):
+        if len(self.content) == 0 or self.content[0] == '<':
+            return self.content
+        else:
+            path = os.path.normpath()
 
     def __str__(self):
         return u'Quiz %d(%s)' % (self.id, self.caption)
@@ -73,6 +80,10 @@ class QuizEntry(models.Model):
         default=1.0,
         help_text=u"最後の問題は配点100倍！！とかやりたいときのために",
     )
+
+    @property
+    def is_accepting(self):
+        return self.closed_at is not None and self.closed_at < timezone.now()
 
     def __str__(self):
         return u'Quiz Series entry %d' % self.id

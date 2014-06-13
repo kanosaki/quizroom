@@ -5,7 +5,7 @@ from django.views.generic import TemplateView, View
 from django.shortcuts import redirect, render
 
 from quiz.forms import ParticipantForm, QuizForm
-from quiz.models import Participant, Quiz, Lobby
+from quiz.models import Participant, Quiz, Lobby, UserAnswer
 from quiz import control
 
 import quizhub.lobby
@@ -120,8 +120,27 @@ class ViewLobby(TemplateView):
         except Participant.DoesNotExist:
             return redirect('participant_register')
 
+    def post(self, request, *args, **kw):
+        command = request.POST.get('command')
+        if command == 'submit_answer':
+            context = self.get_context_data()
+            active_quiz = context['lobby'].active_quiz
+            if not active_quiz.is_accepting:
+                return utils.JsonStatuses.failed('Closed')
+            if 'choice_id' not in request.POST:
+                return utils.JsonStatuses.failed('Invalid POST: choice_id required.')
+            choice_id = request.POST['choice_id']
+            ans = UserAnswer(
+                quiz=active_quiz,
+                choice=int(choice_id),
+                user=context['participant'],
+            )
+            ans.save()
+            return utils.JsonStatuses.ok()
+        else:
+            return utils.JsonStatuses.failed('Unknown command')
 
-class ControlLobby(View):
+class ControlLobby(TemplateView):
     template_name = 'quiz/lobby/control.html'
 
     def get(self, req, *args, **kw):
@@ -152,7 +171,7 @@ class ControlLobby(View):
             )
 
 
-class ActiveLobbyView(View):
+class ActiveLobbyView(TemplateView):
     template_name = 'quiz/lobby/view.html'
 
     def get(self, request, *args, **kwargs):
