@@ -19,7 +19,7 @@
 <div class="jumbotron">
     <h2>{{ quiz.caption }}</h2>
     <div id="quiz-content-container">
-      <p>{{ quiz.content|safe}}</p>
+      <p>{{ quiz.get_content|safe}}</p>
     </div>
 </div>
 
