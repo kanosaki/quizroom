@@ -55,13 +55,17 @@
 <script type="text/javascript" src="{% static "bootstrap/dist/js/bootstrap.min.js" %}"></script>
 <script type="text/javascript" src="{% static "jquery-cookie/jquery.cookie.js" %}"></script>
 <script type="text/javascript" src="{% static "backbone/backbone.js" %}"></script>
-<script type="text/javascript" src="{% static "backbone/backbone.stickit.js" %}"></script>
+<script type="text/javascript" src="{% static "backbone.stickit/backbone.stickit.js" %}"></script>
 <script type="text/javascript" src="{% static "quiz/js/notifIt.js" %}"></script>
 <script type="text/javascript">
   // Initialize values
   var quiz = {};
   quiz.common = {
     navbar_active: '{{ navbar_active }}',
+  };
+
+  quiz.Navbar = {
+    username: '{{ username }}'
   };
 </script>
 <script type="text/javascript" src="{% static "quiz/js/common.js" %}"></script>
