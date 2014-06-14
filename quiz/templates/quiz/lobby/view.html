@@ -10,17 +10,19 @@
 
     $(document).ready(function () {
         $(".btn-choice").click(function() {
-        var lobby_url = "{% url 'lobby_show' lobby.pk %}";
-        var num = $("#btn-choice1").data("choice-num");
-        console.log(num);
-        /*
-        $.post(lobby_url, {'command' : 'submit_answer','choice_id' : num}, function(data){
-                //quiz.handle_ajax_handler(data));
-                //alert(data);
-            });
-*/
-        });
-    });
+        	var lobby_url = "{% url 'lobby_show' lobby.pk %}";
+        	var num = $(this).data("choice-num");
+			$(".btn-choice").attr('disabled', true);
+        	console.log(num);
+			/*
+        	$.post(lobby_url, 
+				{'command' : 'submit_answer','choice_id' : num},
+				function(data){
+					//quiz.handle_ajax_handler(data);
+			});
+			*/
+		});
+	});
   </script>
   <script src="{% static 'quiz/js/lobby.js' %}" type="text/javascript"></script>
 {% endblock %}
