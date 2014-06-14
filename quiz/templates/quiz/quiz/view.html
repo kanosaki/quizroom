@@ -1,9 +1,31 @@
-<h3>{{ quiz.caption }}</h3>
-<div id="quiz-content-container">
-  {{ quiz.content|safe }}
+
+<script type="text/javascript">
+  $(document).ready(function () {
+    $(".btn-choice").click(function(e) {
+      var num = $(e.target).data("choice-num");
+      var score = $(e.target).data("choice-score")
+      $.post('#about,
+        {'id' : {{lobby.pk}} },
+        {'name' : {{participant.name}} },
+        {'choice_num' : num},
+        {'choice_score' : score},
+        window.quiz.handle_ajax_response);
+    });
+  });
+</script>
+
+<div class="jumbotron">
+    <h2>{{ quiz.caption }}</h2>
+    <div id="quiz-content-container">
+      <p>{{ quiz.content|safe}}</p>
+    </div>
 </div>
+
 <div>
   {% for choice in choices %}
-    {{ choice.content|safe }}
+    <div class="row ans-row">
+      <div class="col-xs-2 ans-num"><h3>{{ forloop.counter }}:</h3></div>
+      <div class="col-xs-10"><button class="btn btn-primary btn-lg btn-block btn-choice" data-choice-num="{{ forloop.counter }}" data-choice-score="{{ choice.base_score }}" >{{ choice.content|safe }}</button></div>
+    </div>
   {% endfor %}
 </div>
