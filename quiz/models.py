@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import os.path
+
 from django.db import models
 from django.utils import timezone
 import django.contrib.auth
+from django.template.loader import render_to_string
 
 
 class KVS(models.Model):
@@ -38,7 +40,7 @@ class Quiz(models.Model):
         if len(self.content) == 0 or self.content[0] == '<':
             return self.content
         else:
-            path = os.path.normpath()
+            return render_to_string(self.content)
 
     def __str__(self):
         return u'Quiz %d(%s)' % (self.id, self.caption)
@@ -56,6 +58,13 @@ class AnswerChoice(models.Model):
         help_text=u"解答選択肢．'<','http://','https://'で始まる文字列の時，文字列をそのままレンダリングします"
                   u"それ以外の場合は問題文ディレクトリよりファイルを探索し，見つかったファイルをレンダリングします",
     )
+
+    def get_content(self):
+        if len(self.content) == 0 or self.content[0] == '<':
+            return self.content
+        else:
+            return render_to_string(self.content)
+
 
     def __str__(self):
         return u'Answer for Quiz "%s" score %d' % (self.quiz.caption, self.base_score)
