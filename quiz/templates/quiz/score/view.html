@@ -1,3 +1,158 @@
-<div>
+<!-- CSS 後にまとめる-->
+<style>
+    th{
+        text-align: center;
+        font-size: 16px;
+    }
+    td{
+        text-align: right;
+        vertical-align: top;
+        font-size: 15px;
+    }
+</style>
+<!-- Javascript 後にまとめる-->
 
+<!-- 必要ライブラリ-->
+<script src="{% static "d3/d3.min.js" %}"></script>
+<script type="text/javascript" src="jquery/dist/jquery.min.js"></script>
+<script>
+(function(){
+
+    //サーバーから降ってくる元データをこんな風に仮定
+    var data = [{"name":"a","answer":"1","total":"1"},
+                {"name":"b","answer":"1","total":"2"}.
+                {"name":"c","answer":"1","total":"3"}];
+
+    /**
+        元データを棒グラフ作成用フォーマットに変更する関数
+    　　例：var data = [{quiznum: 1, votes: 10},
+                    {quiznum: 2, votes: 5},
+                    {quiznum: 3, votes: 17},
+                    {quiznum: 4, votes: 8}, 
+                    ];
+    */
+    function chFmt(){
+        //TODO
+    }
+
+    /**
+        棒グラフ作成関数
+    */
+    function makeBar(data){
+        $("#bar").empty();
+
+        var barWidth = 50;
+        var width = (barWidth + 10) * data.length;
+        var height = 200;
+
+        var x = d3.scale.linear().domain([0, data.length]).range([0, width]);
+        var y = d3.scale.linear().domain([0, d3.max(data, function(d) { return d.votes; })]).rangeRound([0, height]);   
+        // グラフを表示するsvgエリアを作成
+        var barDemo = d3.select("#bar")
+            .append("svg:svg")
+                .attr("width", width)
+                .attr("height", height+20);
+                                
+        //棒グラフの表示
+        barDemo.selectAll("rect")
+            .data(data)
+            .enter()
+            .append("svg:rect")
+                .attr("x", function(d, i) { return x(i); })
+                .attr("y", function(d) { return height - y(d.votes); })
+                .attr("height", function(d) { return y(d.votes); })
+                .attr("width", barWidth)
+                .attr("fill", "#2d578b");
+                                
+        //数値(books)を表示    
+        barDemo.selectAll("text")
+            .data(data)
+            .enter()
+            .append("svg:text")
+                .attr("x", function(d, i) { return x(i) + barWidth; })
+                .attr("y", function(d) { return height - y(d.votes); })
+                .attr("dx", -barWidth/2)
+                .attr("dy", "1.2em")
+                .attr("text-anchor", "middle")
+                .text(function(d) { return d.votes;})
+                .attr("fill", "white");
+
+        //年代(year)を表示    
+        barDemo.selectAll("text.yAxis")
+            .data(data)
+            .enter().append("svg:text")
+            .attr("x", function(d, i) { return x(i) + barWidth; })
+            .attr("y", height)
+            .attr("dx", -barWidth/2)
+            .attr("text-anchor", "middle")
+            .attr("style", "font-size: 20; font-family: Helvetica, sans-serif")
+            .text(function(d) { return d.quiznum;})
+            .attr("transform", "translate(0, 20)")
+            .attr("class", "yAxis");    
+    }
+
+    /**
+        JSONデータを得点順に降順ソートして返す関数
+    */
+    function jsort(data){
+        var sort_by = function(prop_name, reverse, primer){
+            reverse = (reverse) ? -1 : 1;
+            return function(a,b){
+                a = a[prop_name];
+                b = b[prop_name];
+                if (typeof(primer) != 'undefined'){
+                    a = primer(a);
+                    b = primer(b);
+                }
+                if (a < b) return reverse * -1;
+                if (a > b) return reverse * 1;
+                return 0;
+            }
+        }
+        data.sort(sort_by('total',true,parseInt));
+        console.log(JSON.stringify(data));
+        return data;
+    }
+
+    /**
+        ランキング表を作る関数
+    */
+    function makeRanking(obj){
+        var data = jsort(obj);
+        //TODO
+    }
+})
+</script>
+
+
+<!-- content -->
+<div class="row">
+    <div class="col-lg-5">
+        <div class="jumbotron" align="center">
+            <p><h2>{{ quiz.caption}}</h2></p>
+            <p><h3>{{ quiz.get_content|safe }}</h3></p>
+        </div>
+        <div id="bar" class="jumbotron" align="center" style="padding-bottom:20px">
+            <p><h2>結果</h2></p><br>
+        </div>
+    </div>
+    <<div class="col-lg-7">
+        <div class="panel panel-default">
+            <div class="panel-heading" align="center">
+                <h2>Ranking</h2>
+            </div>
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>name</th>
+                        <th>answer</th>
+                        <th>score</th>
+                        </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
