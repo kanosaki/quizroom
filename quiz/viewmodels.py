@@ -1,17 +1,16 @@
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView  # , DeleteView
 from django.views.generic.detail import DetailView
-from django.views.generic import TemplateView, View
+from django.views.generic import TemplateView
 from django.shortcuts import redirect, render
 
 from quiz.forms import ParticipantForm, QuizForm
 from quiz.models import Participant, Quiz, Lobby, UserAnswer
 from quiz import control
-
 import quizhub.lobby
-
 import utils
 from utils import api_guard
+
 
 
 # ----------------------------------
@@ -101,22 +100,30 @@ class ViewLobby(TemplateView):
         participant = Participant.objects.get(pk=uid)
         lobby = Lobby.objects.get(pk=kw['lobby_id'])
 
-        quiz_body = lobby.active_quiz.body
+        if lobby.active_quiz is None:
+            kw['quiz'] = None
+            kw['choices'] = None
+        else:
+            quiz_body = lobby.active_quiz.body
+            kw['quiz'] = quiz_body
+            kw['choices'] = quiz_body.answerchoice_set.all()
         kw.update(
             participant=participant,
             lobby=lobby,
-            quiz=quiz_body,
-            choices=quiz_body.answerchoice_set.all(),
         )
         return kw
 
     def get(self, request, *args, **kwargs):
         try:
-            return self.render_to_response(
-                self.get_context_data(
-                    lobby_id=kwargs['pk']
-                )
+            context = self.get_context_data(
+                lobby_id=kwargs['pk']
             )
+            participant = context['participant']
+            lobby = context['lobby']
+            if lobby.players.filter(pk=participant.pk).count() == 0:
+                lobby.join(participant)
+
+            return self.render_to_response(context)
         except Participant.DoesNotExist:
             return redirect('participant_register')
 

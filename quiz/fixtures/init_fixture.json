@@ -93,6 +93,7 @@
     "started_time": null, 
     "quiz_series": 1, 
     "finished_time": null, 
+    "current_state": null, 
     "players": []
   }
 }

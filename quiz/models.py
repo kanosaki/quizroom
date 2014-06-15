@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import os.path
 
 from django.db import models
 from django.utils import timezone
@@ -181,6 +180,17 @@ class Participant(models.Model):
     session_key = models.CharField(max_length=128)
     django_user = models.ForeignKey(django.contrib.auth.get_user_model(), null=True, blank=True)
 
+    def score_for(self, lobby):
+        try:
+            sum = 0
+            for quiz_entry in lobby.quiz_series.quizes.all():
+                ans = UserAnswer.objects.get(quiz=quiz_entry, user=self)
+                sum += ans.score()
+            return sum
+        except UserAnswer.DoesNotExist:
+            return 0
+
+
     def __str__(self):
         return u'Participant %s' % self.name
 
@@ -192,6 +202,9 @@ class UserAnswer(models.Model):
 
     def __str__(self):
         return u'Ans %s' % self.selection
+
+    def score(self):
+        return 0
 
 
 class Lobby(models.Model):
@@ -216,7 +229,8 @@ class Lobby(models.Model):
     finished_time = models.DateTimeField(null=True, blank=True)
     current_state = models.CharField(
         max_length=30,
-        choices=STATES
+        choices=STATES,
+        null=True, blank=True
     )
 
     def __str__(self):
@@ -274,6 +288,36 @@ class Lobby(models.Model):
             yield {
                 'name': p.name,
             }
+
+    def join(self, participant):
+        self.players.add(participant)
+        self.save()
+
+    def _fetch_scores(self):
+        for participant in self.players.all():
+            yield (participant.score_for(self), participant)
+
+    @property
+    def score_list(self):
+        """(スコア, Participant)のタプルのリストを返します
+
+        リストはスコアの降順でソートされています
+        :Example:
+            [(10, <Participant Taro>), (5, <Participant Jiro>), (3, <Participant Saburo>)]
+        """
+        result = []
+        prev_score = None
+        rank = 1
+        for (score, participant) in reversed(list(self._fetch_scores())):
+            if prev_score is not None and score < prev_score:
+                rank += 1
+            result.append({
+                'score': score,
+                'participant': participant,
+                'rank': rank,
+            })
+            prev_score = score
+        return result
 
 
 
