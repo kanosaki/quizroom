@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 import json
+
 from django.test import TestCase, Client
 
 from quiz.control import active_lobby
 from quiz.models import Participant
 
+
+# TODO: 単体テストになってないので，fixtureを分割して各テストを分離する
 
 def decode_json(response):
     b = response.content
@@ -61,22 +64,33 @@ class ControlLobbyTest(TestCase):
         c = Client()
 
         # Check initial state
-        self.assertEqual(lobby.can_start, True)
+        self.assertEqual('', lobby.current_state)
         self.assertEqual(lobby.active_quiz, None)
 
         res = decode_json(c.post(url, {'command': 'activate'}))
         self.assertEqual(res['status'], 'ok')
 
+        res = decode_json(c.post(url, {'command': 'next'}))
+        self.assertEqual(res['status'], 'ok')
         lobby = active_lobby.get()
         self.assertEqual(lobby.pk, lobby_pk)
         self.assertIsNotNone(lobby.active_quiz)
-        self.assertFalse(lobby.can_start)
         self.assertEqual(lobby.active_quiz.body.caption, 'First quiz')
+        self.assertEqual('QUIZ_OPENED', lobby.current_state)
+        res = decode_json(c.post(url, {'command': 'close_submission'}))
+        self.assertEqual(res['status'], 'ok')
+        lobby = active_lobby.get()
+        self.assertEqual('MASTER_ANSWERING', lobby.current_state)
+        res = decode_json(c.post(url, {'command': 'show_scores'}))
+        self.assertEqual(res['status'], 'ok')
+        lobby = active_lobby.get()
+        self.assertEqual('SHOWING_SCORE', lobby.current_state)
 
         res = decode_json(c.post(url, {'command': 'next'}))
         self.assertEqual(res['status'], 'ok')
 
         lobby = active_lobby.get()
+        self.assertEqual('QUIZ_OPENED', lobby.current_state)
         self.assertEqual(lobby.pk, lobby_pk)
         self.assertEqual(lobby.active_quiz.body.caption, 'Second quiz')
 
@@ -94,11 +108,26 @@ class TestViewLobby(TestCase):
         c = Client()
 
         # Check initial state
-        self.assertEqual(lobby.can_start, True)
+        self.assertEqual('', lobby.current_state)
         self.assertEqual(lobby.active_quiz, None)
-
         res = decode_json(c.post(url, {'command': 'activate'}))
         self.assertEqual(res['status'], 'ok')
+        lobby = active_lobby.get()
+        self.assertEqual('INACTIVE', lobby.current_state)
+        self.assertIsNone(lobby.active_quiz)
+
+        res = decode_json(c.post(url, {'command': 'next'}))
+        self.assertEqual(res['status'], 'ok')
+        lobby = active_lobby.get()
+        self.assertIsNotNone(lobby.active_quiz)
+        self.assertEqual(lobby.active_quiz.body.caption, 'First quiz')
+        self.assertEqual('QUIZ_OPENED', lobby.current_state)
+        self.url = url
 
     def test_normal_post(self):
-        pass
+        c = Client()
+        c.post(self.url, {
+            'command': 'submit_answer',
+            'choice_id': 1,  # 1 point choice
+        })
+        res = decode_json(c.get(self.url, {'type': 'scores'}))

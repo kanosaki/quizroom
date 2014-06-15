@@ -94,6 +94,11 @@ class QuizEntry(models.Model):
     def is_accepting(self):
         return self.closed_at is not None and self.closed_at < timezone.now()
 
+    def reset(self):
+        self.opened_at = None
+        self.closed_at = None
+        self.save()
+
     def __str__(self):
         return u'Quiz Series entry %d' % self.id
 
@@ -135,11 +140,17 @@ class QuizSeries(models.Model):
         return self.quizes.order_by('order')
 
     def initialize(self):
+        for quiz_entry in self.quizes.all():
+            quiz_entry.reset()
+        self.active_quiz = None
+        self.save()
+
+    def _load_first_quiz(self):
         first_quiz = self.ordered_quiz().first()
         self.active_quiz = first_quiz
         self.save()
 
-    def go_next_quiz(self):
+    def _load_next_quiz(self):
         ordered_quizes = list(self.ordered_quiz())
         next_index = ordered_quizes.index(self.active_quiz) + 1
         if next_index <= len(ordered_quizes) - 1:
@@ -147,6 +158,12 @@ class QuizSeries(models.Model):
         else:
             self.active_quiz = None
         self.save()
+
+    def go_next_quiz(self):
+        if self.active_quiz is None:
+            self._load_first_quiz()
+        else:
+            self._load_next_quiz()
 
     def __len__(self):
         return self.quizes.count()
@@ -179,44 +196,59 @@ class UserAnswer(models.Model):
 
 class Lobby(models.Model):
     u"""クイズ全体の進行制御や，参加者の管理を行う"""
+
+    # 基本的に
+    # INACTIVE --(開始)--> QUIZ_OPENED --> MASTER_ANSWERING --> SHOWING_SCORE --(終了)--> CLOSED
+    #                          ^                                     |
+    #                          |<-----------(次の問題)-----------------
+    #
+    # という状態遷移．QUIZ_OPENED --> SHOWING_SCOREが主なループ
+    STATES = (
+        ('INACTIVE', 'Inactive'),  # 初期状態
+        ('QUIZ_OPENED', 'Quiz Opened'),  # 問題を表示して，解答を受け付けている状態
+        ('MASTER_ANSWERING', 'Master Answering'),  # 親が回答中
+        ('SHOWING_SCORE', 'Showing score'),  # 親の解答が終了し，解答を受け付けている
+        ('CLOSED', 'Closed'),  # すべての問題が終了し，Lobbyが閉じている状態
+    )
     quiz_series = models.ForeignKey(QuizSeries)
     players = models.ManyToManyField(Participant, null=True, blank=True)
     started_time = models.DateTimeField(null=True, blank=True)
     finished_time = models.DateTimeField(null=True, blank=True)
+    current_state = models.CharField(
+        max_length=30,
+        choices=STATES
+    )
 
     def __str__(self):
         return u'Lobby %d' % self.id
 
     @property
     def status(self):
-        if self.active_quiz is None:
-            if self.started_time is None:
-                return u'Ready'
-            else:
-                return u'Closed'
-        else:
-            return u'Active'
+        return self.get_current_state_display()
 
-    @property
-    def can_start(self):
-        return len(self.quiz_series) > 0 and \
-               self.active_quiz is None and \
-               self.started_time is None
+    def initialize(self, force=False):
+        self.quiz_series.initialize()
+        self.started_time = timezone.now()
+        self.finished_time = None
+        self.current_state = 'INACTIVE'
+        self.save()
 
-    def start(self, force=False):
-        if self.can_start or force:
-            self.quiz_series.initialize()
-            self.started_time = timezone.now()
-            self.finished_time = None
-            self.save()
-        else:
-            raise RuntimeError('Cannot open')
+    def close_participant_submission(self):
+        self.current_state = 'MASTER_ANSWERING'
+        self.save()
+
+    def close_master_submission(self):
+        self.current_state = 'SHOWING_SCORE'
+        self.save()
 
     def go_next_quiz(self):
         self.quiz_series.go_next_quiz()
         if self.active_quiz is None:
             self.finished_time = timezone.now()  # finished
-            self.save()
+            self.current_state = 'CLOSED'
+        else:
+            self.current_state = 'QUIZ_OPENED'
+        self.save()
 
     @property
     def is_finished(self):
@@ -231,7 +263,10 @@ class Lobby(models.Model):
             yield {
                 'index': str(index),
                 'caption': quiz.body.caption,
+                'opened_at': quiz.opened_at,
+                'closed_at': quiz.closed_at,
                 'is_active': quiz == self.active_quiz,
+                'is_accepting': quiz.is_accepting,
             }
 
     def participants(self):

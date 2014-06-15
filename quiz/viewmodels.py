@@ -123,7 +123,8 @@ class ViewLobby(TemplateView):
     def post(self, request, *args, **kw):
         command = request.POST.get('command')
         if command == 'submit_answer':
-            context = self.get_context_data()
+            lobby_id = request.POST['lobby_id']
+            context = self.get_context_data(lobby_id=lobby_id)
             active_quiz = context['lobby'].active_quiz
             if not active_quiz.is_accepting:
                 return utils.JsonStatuses.failed('Closed')
@@ -140,6 +141,7 @@ class ViewLobby(TemplateView):
         else:
             return utils.JsonStatuses.failed('Unknown command')
 
+
 class ControlLobby(TemplateView):
     template_name = 'quiz/lobby/control.html'
 
@@ -154,21 +156,21 @@ class ControlLobby(TemplateView):
         lobby = Lobby.objects.get(pk=kw['pk'])
         command = req.POST['command']
         if command == 'activate':
-            lobby.start(force=True)
+            lobby.initialize(force=True)
+        elif command == 'start_quiz':
+            lobby.go_next_quiz()
+        elif command == 'close_submission':
+            lobby.close_participant_submission()
+        elif command == 'show_scores':
+            lobby.close_master_submission()
         elif command == 'next':
+            lobby.go_next_quiz()
             if lobby.is_finished:
                 return utils.JsonStatuses.failed('Already closed!')
-            else:
-                lobby.go_next_quiz()
         else:
             return utils.JsonStatuses.failed('Unknown command!')
         quizhub.lobby.lobby_hub.request_update()
-        if lobby.is_finished:
-            return utils.JsonStatuses.ok(message='Lobby closed!')
-        else:
-            return utils.JsonStatuses.ok(
-                message='Question is now %s' % lobby.active_quiz.body.caption,
-            )
+        return utils.JsonStatuses.ok()
 
 
 class ActiveLobbyView(TemplateView):

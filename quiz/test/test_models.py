@@ -19,24 +19,28 @@ class TestLobby(TestCase):
         lobby = active_lobby.get()
         self.assertEqual(lobby.started_time, None)
         self.assertEqual(lobby.finished_time, None)
-        self.assertEqual(lobby.can_start, True)
+        self.assertEqual('', lobby.current_state)
         self.assertIsNone(lobby.active_quiz)
 
         before_start = timezone.now()
-        lobby.start()
+        lobby.initialize()
         after_start = timezone.now()
         self.assertTrue(before_start < lobby.started_time < after_start)
-        self.assertIsNotNone(lobby.active_quiz)
-        self.assertFalse(lobby.can_start)
-        self.assertEqual(lobby.active_quiz.body.caption, "First quiz")
+        self.assertIsNone(lobby.active_quiz)
+        self.assertEqual(lobby.current_state, 'INACTIVE')
 
-        # すでに始まっているゲームの開始は許可しない
-        with self.assertRaises(RuntimeError):
-            lobby.start()
+        lobby.go_next_quiz()
+        self.assertEqual("First quiz", lobby.active_quiz.body.caption)
+        self.assertEqual(lobby.current_state, 'QUIZ_OPENED')
+        lobby.close_participant_submission()
+        self.assertEqual(lobby.current_state, 'MASTER_ANSWERING')
+        lobby.close_master_submission()
+        self.assertEqual(lobby.current_state, 'SHOWING_SCORE')
 
         # 次の問題へ
         lobby.go_next_quiz()
-        self.assertEqual(lobby.active_quiz.body.caption, "Second quiz")
+        self.assertEqual(lobby.current_state, 'QUIZ_OPENED')
+        self.assertEqual("Second quiz", lobby.active_quiz.body.caption)
 
 
 class TestKVS(TestCase):

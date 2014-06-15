@@ -6,14 +6,9 @@
   <script type="text/javascript">
     $(document).ready(function () {
       var control_url = "{% url 'lobby_control' lobby.pk %}";
-      $("#activate-lobby").click(function () {
-        $.post(control_url, {'command': 'activate'}, function (data) {
-          quiz.default_ajax_handler(data);
-          location.reload();
-        });
-      });
-      $("#next-quiz").click(function () {
-        $.post(control_url, {'command': 'next'}, function (data) {
+      $("#commands button").click(function(e){
+        var command = $(e.target).data("command");
+        $.post(control_url, {'command': command}, function (data) {
           quiz.default_ajax_handler(data);
           location.reload();
         });
@@ -24,9 +19,13 @@
 
 {% block content %}
   <h3>Lobby control</h3>
-  <button id="activate-lobby" class="btn btn-default">ロビー初期化</button>
-  <button id="close-submission" class="btn btn-default">提出締め切り</button>
-  <button id="next-quiz" class="btn btn-default">次の問題へ</button>
+  <div id="commands">
+    <button data-command="activate" class="btn btn-default">ロビー初期化</button>
+    <button data-command="start_quiz" class="btn btn-default">問題開始</button>
+    <button data-command="close_submission" class="btn btn-default">解答提出締め切り</button>
+    <button data-command="show_scores" class="btn btn-default">現在順位発表へ</button>
+    <button data-command="next" class="btn btn-default">次の問題へ</button>
+  </div>
   <dl class="dl-horizontal">
     <dt>Start Time</dt>
     {% if lobby.started_time %}
@@ -48,7 +47,10 @@
       <tr>
         <th>ID</th>
         <th>Caption</th>
+        <th>Opened at</th>
+        <th>Closed at</th>
         <th>IsActive</th>
+        <th>IsAccepting</th>
       </tr>
       </thead>
       <tbody>
@@ -56,11 +58,14 @@
         <tr>
           <td>{{ quiz.index }}</td>
           <td>{{ quiz.caption }}</td>
+          <td>{{ quiz.opened_at }}</td>
+          <td>{{ quiz.closed_at }}</td>
           {% if quiz.is_active %}
             <td>Active</td>
           {% else %}
             <td>-</td>
           {% endif %}
+          <td>{{ quiz.is_accepting }}</td>
         </tr>
       {% endfor %}
       </tbody>

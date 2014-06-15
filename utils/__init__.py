@@ -43,5 +43,5 @@ def api_guard(f):
             return f(*args, **kw)
         except Exception as e:
             traceback.print_exc()
-            return HttpResponse(unicode(e))
+            return JsonStatuses.failed(str(e))
     return wrapper
