@@ -32,7 +32,8 @@
     // ------------------------------------------
     // Ajax utilities
     // ------------------------------------------
-    quiz.default_ajax_handler = function (res) {
+    quiz.default_ajax_handler = function (data) {
+        var res = JSON.parse(data);
         if (res.status != 'ok') {
             quiz.notify.error(res.message);
         } else if (res.status == 'ok' && res.message) {
