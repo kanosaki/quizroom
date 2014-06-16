@@ -11,7 +11,7 @@ from quiz.models import Participant
 
 def decode_json(response):
     b = response.content
-    return json.loads(b.decode('ascii'))
+    return json.loads(b.decode('utf-8'))
 
 
 class TestParticipant(TestCase):
@@ -64,7 +64,7 @@ class ControlLobbyTest(TestCase):
         c = Client()
 
         # Check initial state
-        self.assertEqual('', lobby.current_state)
+        self.assertEqual(None, lobby.current_state)
         self.assertEqual(lobby.active_quiz, None)
 
         res = decode_json(c.post(url, {'command': 'activate'}))
@@ -99,35 +99,46 @@ class TestViewLobby(TestCase):
     fixtures = ['init_fixture.json']
 
     def setUp(self):
-        control_url = '/lobby/now'
         c = Client()
-        res = decode_json(c.post(control_url, {'id': 'default'}))
+        res = decode_json(c.post('/lobby/now', {'id': 'default'}))
         self.assertEqual(res['status'], 'ok')
         lobby = active_lobby.get()
-        url = '/lobby/control/%d' % lobby.pk
+        control_url = '/lobby/control/%d' % lobby.pk
         c = Client()
 
         # Check initial state
-        self.assertEqual('', lobby.current_state)
+        self.assertEqual(None, lobby.current_state)
         self.assertEqual(lobby.active_quiz, None)
-        res = decode_json(c.post(url, {'command': 'activate'}))
+        res = decode_json(c.post(control_url, {'command': 'activate'}))
         self.assertEqual(res['status'], 'ok')
         lobby = active_lobby.get()
         self.assertEqual('INACTIVE', lobby.current_state)
         self.assertIsNone(lobby.active_quiz)
 
-        res = decode_json(c.post(url, {'command': 'next'}))
+        res = decode_json(c.post(control_url, {'command': 'next'}))
         self.assertEqual(res['status'], 'ok')
         lobby = active_lobby.get()
         self.assertIsNotNone(lobby.active_quiz)
         self.assertEqual(lobby.active_quiz.body.caption, 'First quiz')
         self.assertEqual('QUIZ_OPENED', lobby.current_state)
-        self.url = url
+        self.url = '/lobby/%d' % lobby.pk
 
     def test_normal_post(self):
         c = Client()
-        c.post(self.url, {
+        c.post('/user/register', {'name': 'test_user'})
+        res = decode_json(c.post(self.url, {
             'command': 'submit_answer',
+            'lobby_id': 1,
             'choice_id': 1,  # 1 point choice
-        })
-        res = decode_json(c.get(self.url, {'type': 'scores'}))
+        }))
+        self.assertEqual(res['status'], 'ok')
+        res = decode_json(c.get(self.url, {'type': 'query', 'command': 'list_score'}))
+        self.assertEqual(res['status'], 'ok')
+        self.assertEqual(res['content'], [
+            {'score': 1,
+             'rank': 1,
+             'name': 'test_user',
+             'participant_id': 1,
+             'is_you': True}
+        ])
+

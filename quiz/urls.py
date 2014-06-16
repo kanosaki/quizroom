@@ -15,7 +15,7 @@ participant_urls = patterns(
 lobby_urls = patterns(
     '',
     url(r'^now$', viewmodels.ActiveLobbyView.as_view(), name='lobby_now'),
-    url(r'^(?P<pk>\d+)/$', viewmodels.ViewLobby.as_view(), name='lobby_show'),
+    url(r'^(?P<pk>\d+)$', viewmodels.ViewLobby.as_view(), name='lobby_show'),
     url(r'^control/(?P<pk>\d+)$', viewmodels.ControlLobby.as_view(), name='lobby_control'),
 )
 

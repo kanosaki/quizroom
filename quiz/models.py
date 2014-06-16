@@ -181,14 +181,14 @@ class Participant(models.Model):
     django_user = models.ForeignKey(django.contrib.auth.get_user_model(), null=True, blank=True)
 
     def score_for(self, lobby):
-        try:
-            sum = 0
-            for quiz_entry in lobby.quiz_series.quizes.all():
+        sum = 0
+        for quiz_entry in lobby.quiz_series.quizes.all():
+            try:
                 ans = UserAnswer.objects.get(quiz=quiz_entry, user=self)
                 sum += ans.score()
-            return sum
-        except UserAnswer.DoesNotExist:
-            return 0
+            except UserAnswer.DoesNotExist:
+                pass
+        return sum
 
 
     def __str__(self):
@@ -204,7 +204,7 @@ class UserAnswer(models.Model):
         return u'Ans %s' % self.selection
 
     def score(self):
-        return 0
+        return 1
 
 
 class Lobby(models.Model):
@@ -220,6 +220,7 @@ class Lobby(models.Model):
         ('INACTIVE', 'Inactive'),  # 初期状態
         ('QUIZ_OPENED', 'Quiz Opened'),  # 問題を表示して，解答を受け付けている状態
         ('MASTER_ANSWERING', 'Master Answering'),  # 親が回答中
+        ('SHOWING_ANSWER', 'Showing answer'),  # 親の解答が終了し，解答を受け付けている
         ('SHOWING_SCORE', 'Showing score'),  # 親の解答が終了し，解答を受け付けている
         ('CLOSED', 'Closed'),  # すべての問題が終了し，Lobbyが閉じている状態
     )
@@ -289,9 +290,10 @@ class Lobby(models.Model):
                 'name': p.name,
             }
 
-    def join(self, participant):
-        self.players.add(participant)
-        self.save()
+    def check_participant(self, participant):
+        if self.players.filter(pk=participant.pk).count() == 0:
+            self.players.add(participant)
+            self.save()
 
     def _fetch_scores(self):
         for participant in self.players.all():
@@ -313,11 +315,15 @@ class Lobby(models.Model):
                 rank += 1
             result.append({
                 'score': score,
-                'participant': participant,
+                'name': participant.name,
+                'participant_id': participant.id,
                 'rank': rank,
             })
             prev_score = score
         return result
+
+    def can_accept_answer(self, participant):
+        return self.current_state == 'QUIZ_OPENED'  # TODO: Add master exception
 
 
 

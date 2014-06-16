@@ -99,6 +99,7 @@ class ViewLobby(TemplateView):
         uid = self.request.session['uid']
         participant = Participant.objects.get(pk=uid)
         lobby = Lobby.objects.get(pk=kw['lobby_id'])
+        lobby.check_participant(participant)
 
         if lobby.active_quiz is None:
             kw['quiz'] = None
@@ -113,16 +114,33 @@ class ViewLobby(TemplateView):
         )
         return kw
 
+    def get_score_list(self, uid):
+        lobby = Lobby.objects.get(pk=self.kwargs['pk'])
+        request_participant = Participant.objects.get(pk=uid)
+        score_list = lobby.score_list
+        def user_filter(entry):
+            if entry['participant_id'] == request_participant.id:
+                entry['is_you'] = True
+            else:
+                entry['is_you'] = False
+            return entry
+        return [user_filter(entry) for entry in score_list]
+
+    def query_data(self, request, *args, **kw):
+        command = request.GET.get('command')
+        if command == 'list_score':
+            uid = request.session['uid']
+            return utils.JsonStatuses.ok(content=self.get_score_list(uid))
+        else:
+            return utils.JsonStatuses.failed('Unknown command %s' % command)
+
     def get(self, request, *args, **kwargs):
         try:
+            if request.GET.get('type') == 'query':
+                return self.query_data(request, *args, **kwargs)
             context = self.get_context_data(
                 lobby_id=kwargs['pk']
             )
-            participant = context['participant']
-            lobby = context['lobby']
-            if lobby.players.filter(pk=participant.pk).count() == 0:
-                lobby.join(participant)
-
             return self.render_to_response(context)
         except Participant.DoesNotExist:
             return redirect('participant_register')
@@ -132,8 +150,10 @@ class ViewLobby(TemplateView):
         if command == 'submit_answer':
             lobby_id = request.POST['lobby_id']
             context = self.get_context_data(lobby_id=lobby_id)
-            active_quiz = context['lobby'].active_quiz
-            if not active_quiz.is_accepting:
+            lobby = context['lobby']
+            participant = context['participant']
+            active_quiz = lobby.active_quiz
+            if not lobby.can_accept_answer(participant):
                 return utils.JsonStatuses.failed('Closed')
             if 'choice_id' not in request.POST:
                 return utils.JsonStatuses.failed('Invalid POST: choice_id required.')
