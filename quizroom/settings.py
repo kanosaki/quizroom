@@ -117,6 +117,7 @@ BOWER_INSTALLED_APPS = (
     'backbone',
     'backbone.stickit',
     'bootstrap',
+    'd3',
     'jquery',
     'jquery-cookie',
     'underscore',

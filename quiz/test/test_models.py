@@ -19,7 +19,7 @@ class TestLobby(TestCase):
         lobby = active_lobby.get()
         self.assertEqual(lobby.started_time, None)
         self.assertEqual(lobby.finished_time, None)
-        self.assertEqual('', lobby.current_state)
+        self.assertEqual(None, lobby.current_state)
         self.assertIsNone(lobby.active_quiz)
 
         before_start = timezone.now()
