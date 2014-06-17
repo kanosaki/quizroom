@@ -22,7 +22,16 @@
 
 			//棒グラフ用にJSON整形
 			function chJSON(data){
-				//TODO
+				var array = [0,0,0,0];
+				var result = new Array(4);
+				for(var i in data){
+					var id = data[i].choice_id - 1;
+					array[id] = array[id] + 1;
+				}
+				for(var i=0;i < result.length;i++){
+					result[i] = {'choice_id':parseInt(i)+1,'total':array[i] };
+				}
+				return result;
 			}
 			
 			//結果を棒グラフで表示
@@ -71,7 +80,7 @@
 						.attr("dx", -barWidth/2)
 						.attr("text-anchor", "middle")
 						.attr("style", "font-size: 20; font-family: Helvetica, sans-serif")
-						.text(function(d) { return d.quiznum;})
+						.text(function(d) { return d.choice_id;})
 						.attr("transform", "translate(0, 20)")
 						.attr("class", "yAxis");
 			}
@@ -104,7 +113,7 @@
 					window.quiz.default_ajax_handler(data);
 					var obj = JSON.parse(data);
 					if(obj.status == 'ok'){
-						makeBar(obj.content);
+						makeBar(chJSON(obj.content));
 					}
 				});
 
