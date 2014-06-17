@@ -131,9 +131,9 @@ class TestViewLobby(TestCase):
             'lobby_id': 1,
             'choice_id': 1,  # 1 point choice
         }))
-        self.assertEqual(res['status'], 'ok')
-        res = decode_json(c.get(self.url, {'type': 'query', 'command': 'list_score'}))
-        self.assertEqual(res['status'], 'ok')
+        self.assertEqual(res['status'], 'ok', res.get('message'))
+        res = decode_json(c.get(self.url, {'type': 'query', 'command': 'score_list'}))
+        self.assertEqual(res['status'], 'ok', res.get('message'))
         self.assertEqual(res['content'], [
             {'score': 1,
              'rank': 1,
@@ -147,23 +147,23 @@ class TestViewLobby(TestCase):
         c2 = Client()
 
         c1.post('/user/register', {'name': 'test_user1'})
-        c1.post('/user/register', {'name': 'test_user2'})
+        c2.post('/user/register', {'name': 'test_user2'})
 
         res = decode_json(c1.post(self.url, {
             'command': 'submit_answer',
             'lobby_id': 1,
             'choice_id': 1,  # 1 point choice
         }))
-        self.assertEqual(res['status'], 'ok')
+        self.assertEqual(res['status'], 'ok', res.get('message'))
         res = decode_json(c2.post(self.url, {
             'command': 'submit_answer',
             'lobby_id': 1,
-            'choice_id': 2,  # 0 point choice
+            'choice_id': 0,  # 0 point choice
         }))
-        self.assertEqual(res['status'], 'ok')
+        self.assertEqual(res['status'], 'ok', res.get('message'))
 
-        res = decode_json(c1.get(self.url, {'type': 'query', 'command': 'list_score'}))
-        self.assertEqual(res['status'], 'ok')
+        res = decode_json(c1.get(self.url, {'type': 'query', 'command': 'score_list'}))
+        self.assertEqual(res['status'], 'ok', res.get('message'))
         self.assertEqual(res['content'], [
             {'score': 1,
              'rank': 1,
@@ -177,8 +177,8 @@ class TestViewLobby(TestCase):
              'is_you': False},
         ])
 
-        res = decode_json(c1.get(self.url, {'type': 'query', 'command': 'list_score'}))
-        self.assertEqual(res['status'], 'ok')
+        res = decode_json(c2.get(self.url, {'type': 'query', 'command': 'score_list'}))
+        self.assertEqual(res['status'], 'ok', res.get('message'))
         self.assertEqual(res['content'], [
             {'score': 1,
              'rank': 1,

@@ -43,9 +43,12 @@ class Quiz(models.Model):
 
     def get_choice(self, choice_index):
         choices = self.answerchoice_set.all()
-        if choice_index > choices.count():
+        if choice_index >= choices.count():
             raise Exception('There is no such choice')
         return choices[choice_index]
+
+    def get_score(self, choice_index):
+        return self.get_choice(choice_index).base_score
 
     def __str__(self):
         return u'Quiz %d(%s)' % (self.id, self.caption)
@@ -69,7 +72,6 @@ class AnswerChoice(models.Model):
             return self.content
         else:
             return render_to_string(self.content)
-
 
     def __str__(self):
         return u'Answer for Quiz "%s" score %d' % (self.quiz.caption, self.base_score)
@@ -103,6 +105,9 @@ class QuizEntry(models.Model):
         self.opened_at = None
         self.closed_at = None
         self.save()
+
+    def get_score(self, choice_index):
+        return self.body.get_score(choice_index)
 
     def __str__(self):
         return u'Quiz Series entry %d' % self.id
@@ -196,7 +201,6 @@ class Participant(models.Model):
                 pass
         return sum
 
-
     def __str__(self):
         return u'Participant %s' % self.name
 
@@ -210,7 +214,7 @@ class UserAnswer(models.Model):
         return u'Ans %s' % self.selection
 
     def score(self):
-        return 1
+        return self.quiz.get_score(self.choice)
 
 
 class Lobby(models.Model):
@@ -316,7 +320,7 @@ class Lobby(models.Model):
         result = []
         prev_score = None
         rank = 1
-        for (score, participant) in reversed(list(self._fetch_scores())):
+        for (score, participant) in reversed(sorted(self._fetch_scores())):
             if prev_score is not None and score < prev_score:
                 rank += 1
             result.append({
