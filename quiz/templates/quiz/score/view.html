@@ -96,7 +96,7 @@
 			$.get('{% url 'lobby_show' lobby.pk %}',
 				{
 					'type' : 'query',
-					'command' : 'list_score'
+					'command' : 'score_list'
 				},
 				function(data){
 					window.quiz.default_ajax_handler(data);
