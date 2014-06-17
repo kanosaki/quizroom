@@ -22,9 +22,7 @@
 
 			//棒グラフ用にJSON整形
 			function chJSON(data){
-				//for(){
-				//}
-				//return;
+				//TODO
 			}
 			
 			//結果を棒グラフで表示
@@ -81,18 +79,36 @@
 			//ランキング表作成
 			function makeRanking(data){
 				for(var i in data){
-					msg = '<tr>';
+					var msg;
+					if(data[i].is_you){
+						msg = '<tr class="success">';
+					} else {
+						msg = '<tr>';
+					}
 					msg = msg + '<td>' + data[i].rank + '<td>';
 					msg = msg + '<td>' + data[i].name + '</td>';
-					msg = msg + '<td>' + data[i].participant_id + '</td>';
 					msg = msg + '<td>' + data[i].score + '</td>';
 					msg = msg + '</tr>';
-					$("table#tgt-table tbody").append(msg);
+					$("table#ranking tbody").append(msg);
 				}
 			}
 
-			//GETしてscore_list取得
-			
+
+			//GET後棒グラフを表示
+			$.get('{% url 'lobby_show' lobby.pk %}',
+				{
+					'type' : 'query',
+					'command' : 'all_answers'
+				},
+				function(data){
+					window.quiz.default_ajax_handler(data);
+					var obj = JSON.parse(data);
+					if(obj.status == 'ok'){
+						makeBar(obj.content);
+					}
+				});
+
+			//GET後ランキング表を表示
 			$.get('{% url 'lobby_show' lobby.pk %}',
 				{
 					'type' : 'query',
@@ -102,12 +118,10 @@
 					window.quiz.default_ajax_handler(data);
 					var obj = JSON.parse(data);
 					if(obj.status == 'ok'){
-						for(var i in data){
-							makeRanking(data.content);
-						}
+						makeRanking(obj.content);
 					}
 				});
-		});	
+		});
 	</script>
 {% endblock %}
 
@@ -127,14 +141,13 @@
             <div class="panel-heading" align="center">
                 <h2>Ranking</h2>
             </div>
-            <table id="tgt-table" class="table table-striped table-bordered">
+            <table id="ranking" class="table table-striped table-bordered">
                 <thead>
                     <tr>
                         <th>rank</th>
                         <th>name</th>
-                        <th>answer</th>
                         <th>score</th>
-                        </tr>
+                    </tr>
                 </thead>
                 <tbody>
                 </tbody>
