@@ -41,6 +41,12 @@ class Quiz(models.Model):
         else:
             return render_to_string(self.content)
 
+    def get_choice(self, choice_index):
+        choices = self.answerchoice_set.all()
+        if choice_index > choices.count():
+            raise Exception('There is no such choice')
+        return choices[choice_index]
+
     def __str__(self):
         return u'Quiz %d(%s)' % (self.id, self.caption)
 
@@ -110,7 +116,7 @@ class QuizSeries(models.Model):
     u"""実際にQuizをRoomで使用する時のためのデコレータ
 
     どのQuizを使って，どのようにユーザーのスコアを出して，どのように画面切り替えを行うか等の
-    実際のゲーム進行のデータを制御します
+    実際のゲーム進行のデータを制御します．
     """
     quizes = models.ManyToManyField(QuizEntry)
     active_quiz = models.ForeignKey(QuizEntry, blank=True, null=True, related_name='active_quiz')
@@ -321,6 +327,19 @@ class Lobby(models.Model):
             })
             prev_score = score
         return result
+
+    def _fetch_all_answers(self):
+        user_answers = UserAnswer.objects.get(quiz=self.active_quiz)
+        for ans in user_answers:
+            return {
+                'name': ans.user.name,
+                'participant_id': ans.user.id,
+                'choice_id': ans.choice,
+            }
+
+    @property
+    def all_answers(self):
+        return list(self._fetch_all_answers())
 
     def can_accept_answer(self, participant):
         return self.current_state == 'QUIZ_OPENED'  # TODO: Add master exception

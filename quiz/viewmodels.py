@@ -13,6 +13,8 @@ from utils import api_guard
 
 
 
+
+
 # ----------------------------------
 # User
 # ----------------------------------
@@ -118,23 +120,68 @@ class ViewLobby(TemplateView):
         lobby = Lobby.objects.get(pk=self.kwargs['pk'])
         request_participant = Participant.objects.get(pk=uid)
         score_list = lobby.score_list
-        def user_filter(entry):
+
+        def append_is_you_filter(entry):
+            """スコアの要素を走査し，そのスコアがリクエストした人だった場合は is_you: True を足して
+            そうで無ければ is_you: False を追加します
+            """
             if entry['participant_id'] == request_participant.id:
                 entry['is_you'] = True
             else:
                 entry['is_you'] = False
             return entry
-        return [user_filter(entry) for entry in score_list]
+
+        return [append_is_you_filter(entry) for entry in score_list]
+
+    def get_all_answers(self):
+        lobby = Lobby.objects.get(pk=self.kwargs['pk'])
+        return lobby.all_answers()
 
     def query_data(self, request, *args, **kw):
         command = request.GET.get('command')
-        if command == 'list_score':
+        if command == 'score_list':
             uid = request.session['uid']
             return utils.JsonStatuses.ok(content=self.get_score_list(uid))
+        elif command == 'all_answers':
+            return utils.JsonStatuses.ok(content=self.get_all_answers())
         else:
             return utils.JsonStatuses.failed('Unknown command %s' % command)
 
     def get(self, request, *args, **kwargs):
+        """GET
+
+        クエリが無い場合は，quiz/lobby/view.htmlを用いてHTMLを返します
+        ユーザーが登録していない場合は，登録ページへリダイレクトします
+
+        クエリパラメータ?type=query があるときは，JSONを返します
+        * ?type=query&command=score_list
+            各参加者とそのスコアのリストを返します．
+            返されるJSONは，スコアで降順ソートされており，
+            同様にランキングで昇順ソートされています．このとき，スコアが同じ場合はランキングが変化しません．
+            例:
+                {'status': 'ok',
+                 'content':
+                    [{'score': 1,
+                      'rank': 1,
+                      'name': 'test_user1',
+                      'participant_id': 1,
+                      'is_you': True},
+                     ....
+                     ]}
+            それぞれ
+                score: 参加者の得点 :: 数値(たぶん整数値)
+                rank: 参加者の順位(同率あり) :: 整数値
+                name: 名前(文字列)
+                participant_id: 内部で用いる参加者ID
+                is_you: このリクエストを送った人のスコアの時True, そうでなければFalse
+        * ?type=query&command=all_answers
+            参加者の回答一覧を返します
+            {'status': 'ok',
+             'content': [
+                {'name': 'test_user', 'participant_id': 1, 'choice_id': 1},
+                ....
+             ]}
+        """
         try:
             if request.GET.get('type') == 'query':
                 return self.query_data(request, *args, **kwargs)
