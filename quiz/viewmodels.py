@@ -287,7 +287,7 @@ class ControlLobby(TemplateView):
 
 
 class ViewLobbyPresenter(TemplateView):
-    template_name = 'quiz/presneter/view.html'
+    template_name = 'quiz/presenter/view.html'
 
 
 class ActiveLobbyView(TemplateView):
