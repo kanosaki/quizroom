@@ -289,6 +289,12 @@ class ControlLobby(TemplateView):
 class ViewLobbyPresenter(TemplateView):
     template_name = 'quiz/presenter/view.html'
 
+    def get_context_data(self, **kw):
+        lobby_id = self.kwargs.get('pk')
+        kw.update({
+            'lobby': get_object_or_404(Lobby, pk=lobby_id),
+        })
+
 
 class ActiveLobbyView(TemplateView):
     template_name = 'quiz/lobby/view.html'
