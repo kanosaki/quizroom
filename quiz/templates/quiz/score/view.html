@@ -3,21 +3,21 @@
 {% block title %}Quizroom{% endblock %}
 
 {% block page_js %}
-	<style>
+	<style type="text/css">
 		th{
 			text-align: center;
     	    font-size: 16px;
 		}
 		td{
-			text-align: right;
+			text-align: center;
 			vertical-align: top;
-			font-size: 15px;
+			font-size: 20px;
 		}
 	</style>
 
 	<script src="{% static "d3/d3.min.js" %}"></script>
 	<script type="text/javascript">
-		$(document.ready(function(){
+		$(document).ready(function(){
 
 			//棒グラフ用にJSON整形
 			function chJSON(data){
@@ -93,7 +93,7 @@
 					} else {
 						msg = '<tr>';
 					}
-					msg = msg + '<td>' + data[i].rank + '<td>';
+					msg = msg + '<td>' + data[i].rank + '</td>';
 					msg = msg + '<td>' + data[i].name + '</td>';
 					msg = msg + '<td>' + data[i].score + '</td>';
 					msg = msg + '</tr>';
@@ -110,9 +110,8 @@
 				},
 				function(data){
 					window.quiz.default_ajax_handler(data);
-					var obj = JSON.parse(data);
-					if(obj.status == 'ok'){
-						makeBar(chJSON(obj.content));
+					if(data.status == 'ok'){
+						makeBar(chJSON(data.content));
 					}
 				});
 
@@ -124,9 +123,8 @@
 				},
 				function(data){
 					window.quiz.default_ajax_handler(data);
-					var obj = JSON.parse(data);
-					if(obj.status == 'ok'){
-						makeRanking(obj.content);
+					if(data.status == 'ok'){
+						makeRanking(data.content);
 					}
 				});
 		});
