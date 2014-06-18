@@ -12,7 +12,7 @@ init:
 	$(MANAGE) collectstatic
 	$(MANAGE) syncdb
 	$(MANAGE) loaddata etc/users.json
-	$(MANAGE) loaddata quiz/fixtures/init_fixture.json
+	$(MANAGE) loaddata etc/production_init_data.json
 
 .PHONY: bower_update
 bower_update:
@@ -29,4 +29,4 @@ resetdb_test:
 	rm -fr db/control.leveldb
 	$(MANAGE) syncdb
 	$(MANAGE) loaddata etc/users.json
-	$(MANAGE) loaddata quiz/fixtures/init_fixture.json
+	$(MANAGE) loaddata etc/production_init_data.json

@@ -43,9 +43,9 @@ class Quiz(models.Model):
 
     def get_choice(self, choice_index):
         choices = self.answerchoice_set.all()
-        if choice_index >= choices.count():
+        if choice_index > choices.count():
             raise Exception('There is no such choice')
-        return choices[choice_index]
+        return choices[choice_index - 1]
 
     def get_score(self, choice_index):
         return self.get_choice(choice_index).base_score
@@ -211,7 +211,7 @@ class UserAnswer(models.Model):
     user = models.ForeignKey(Participant)
 
     def __str__(self):
-        return u'Ans %s' % self.selection
+        return u'Ans %s' % self.choice
 
     def score(self):
         return self.quiz.get_score(self.choice)
@@ -291,7 +291,6 @@ class Lobby(models.Model):
                 'opened_at': quiz.opened_at,
                 'closed_at': quiz.closed_at,
                 'is_active': quiz == self.active_quiz,
-                'is_accepting': quiz.is_accepting,
             }
 
     def participants(self):
@@ -347,6 +346,20 @@ class Lobby(models.Model):
 
     def can_accept_answer(self, participant):
         return self.current_state == 'QUIZ_OPENED'  # TODO: Add master exception
+
+    def submit_answer(self, participant, choice_id):
+        active_quiz = self.active_quiz
+        try:
+            previous_ans = UserAnswer.objects.get(user=participant, quiz=active_quiz)
+            previous_ans.choice = choice_id
+            previous_ans.save()
+        except UserAnswer.DoesNotExist:
+            ans = UserAnswer(
+                quiz=self.active_quiz,
+                choice=int(choice_id),
+                user=participant,
+            )
+            ans.save()
 
 
 
