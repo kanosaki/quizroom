@@ -81,16 +81,16 @@
     <thead>
     <tr>
       <th>Rank</th>
-      <th>Score</th>
       <th>Name</th>
+      <th>Score</th>
     </tr>
     </thead>
     <tbody>
     {% for score_entry in lobby.score_list %}
       <tr>
         <td>{{ score_entry.rank }}</td>
+        <td>{{ score_entry.name }}</td>
         <td>{{ score_entry.score }}</td>
-        <td>{{ score_entry.participant }}</td>
       </tr>
     {% endfor %}
     </tbody>
