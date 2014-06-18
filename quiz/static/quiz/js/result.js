@@ -14,28 +14,23 @@
 	$(document).ready(function(){
 		//棒グラフ用にJSON整形
 		function chJSON(data){
-			var array = [0,0,0,0];
 			var result = new Array(4);
-			for(var i in data){
-				var id = data[i].choice_id - 1;
-				array[id] = array[id] + 1;
-			}
-			for(var i=0;i < result.length;i++){
-				result[i] = {'choice_id':parseInt(i)+1,'total':array[i] };
+			for(var i=0;i<result.length;i++){
+				result[i] = {'choice_id':data[i].choice_id,'total':data[i].answerers.length}
 			}
 			return result;
 		}
 		
 		//結果を棒グラフで表示
 		function makeBar(data){
-			$("#bar-demo").empty();
+			$("#bar").empty();
 			var barWidth = 50;
 			var width = (barWidth + 10) * data.length;
 			var height = 200;
 			var x = d3.scale.linear().domain([0, data.length]).range([0, width]);
 			var y = d3.scale.linear().domain([0, d3.max(data, function(d) { return d.total; })]).rangeRound([0, height]);
 			// グラフを表示するsvgエリアを作成
-			var barDemo = d3.select("#bar-demo")
+			var barDemo = d3.select("#bar")
 				.append("svg:svg")
 					.attr("width", width)
 					.attr("height", height+20);
@@ -78,16 +73,12 @@
 		});
 
 		function makeScore(data){
-			for(var i in data){
-				var msg;
-				if(data[i].is_you){
-					msg = '<tr class="success">';
-				} else {
-					msg = '<tr>';
-				}
-				msg = msg + '<td>' + data[i].rank + '</td>';
-				msg = msg + '<td>' + data[i].name + '</td>';
-				msg = msg + '<td>' + data[i].answer + '</td>';
+			var choice =  data.choice_id;
+			for(var obj in data.answerers){
+				var msg = '<tr>';
+				//msg = msg + '<td>' + data[i].rank + '</td>';
+				msg = msg + '<td>' + obj.name + '</td>';
+				msg = msg + '<td>' + choice + '</td>';
 				msg = msg + '</tr>';
 				$("table#score tbody").append(msg);
 			}

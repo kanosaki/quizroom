@@ -15,21 +15,20 @@
 		}
 	</style>
 
-	<script src="{% static "d3/d3.min.js" %}"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
 			//ランキング表作成
 			function makeRanking(data){
-				for(var i in data){
+				for(var obj in data){
 					var msg;
-					if(data[i].is_you){
+					if(obj.is_you){
 						msg = '<tr class="success">';
 					} else {
 						msg = '<tr>';
 					}
-					msg = msg + '<td>' + data[i].rank + '</td>';
-					msg = msg + '<td>' + data[i].name + '</td>';
-					msg = msg + '<td>' + data[i].score + '</td>';
+					msg = msg + '<td>' + obj.rank + '</td>';
+					msg = msg + '<td>' + obj.name + '</td>';
+					msg = msg + '<td>' + obj.score + '</td>';
 					msg = msg + '</tr>';
 					$("table#ranking tbody").append(msg);
 				}

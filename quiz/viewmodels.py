@@ -294,7 +294,6 @@ class ViewLobbyPresenter(TemplateView):
             'lobby': get_object_or_404(Lobby, pk=lobby_id),
         })
 
-
 class ActiveLobbyView(TemplateView):
     template_name = 'quiz/lobby/view.html'
 
