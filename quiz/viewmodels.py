@@ -2,7 +2,7 @@ from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView  # , DeleteView
 from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 
 from quiz.forms import ParticipantForm, QuizForm
 from quiz.models import Participant, Quiz, Lobby, UserAnswer
@@ -214,6 +214,27 @@ class ViewLobby(TemplateView):
             return utils.JsonStatuses.ok()
         else:
             return utils.JsonStatuses.failed('Unknown command')
+
+
+class ViewLobbyRanking(TemplateView):
+    template_name = 'quiz/score/view.html'
+
+    def get_context_data(self, **kwargs):
+        lobby_id = kwargs.get('pk')
+        lobby = get_object_or_404(Lobby, pk=lobby_id)
+        return {
+            'quiz': lobby.active_quiz,
+            'lobby': lobby,
+        }
+
+
+class ViewLobbyRankingNow(TemplateView):
+    def get(self, request, *args, **kwargs):
+        active_lobby = control.active_lobby.get()
+        if active_lobby is not None:
+            return redirect('lobby_ranking', active_lobby.pk)
+        else:
+            return render(request, 'quiz/lobby/nolobby.html')
 
 
 class ControlLobby(TemplateView):
