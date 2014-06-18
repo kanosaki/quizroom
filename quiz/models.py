@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from collections import defaultdict
+
 from django.db import models
 from django.utils import timezone
 import django.contrib.auth
@@ -340,9 +342,29 @@ class Lobby(models.Model):
                 'choice_id': ans.choice,
             }
 
-    @property
     def all_answers(self):
         return list(self._fetch_all_answers())
+
+    def answer_summary(self, requester_uid=None):
+        choice_map = defaultdict(set)
+        try:
+            answers = list(UserAnswer.objects.filter(quiz=self.active_quiz))
+        except UserAnswer.DoesNotExist:
+            return {}
+        for ans in answers:
+            choice_map[ans.choice].add(ans)
+        ret = []
+        for (choice, answerers) in sorted(choice_map.items()):
+            anses = [{'name': ans.user.name,
+                      'participant_id': ans.user.id,
+                      'is_you': ans.user.pk == requester_uid}
+                     for ans in answerers]
+            ret.append({
+                'choice_id': choice + 1,
+                'number_of_answer': len(answerers),
+                'answerers': anses,
+            })
+        return ret
 
     def can_accept_answer(self, participant):
         return self.current_state == 'QUIZ_OPENED'  # TODO: Add master exception
