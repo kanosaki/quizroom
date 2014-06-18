@@ -26,7 +26,14 @@
     <button data-command="show_scores" class="btn btn-default">現在順位発表へ</button>
     <button data-command="next" class="btn btn-default">次の問題へ</button>
   </div>
+  <h4>Lobby</h4>
   <dl class="dl-horizontal">
+    <dt>State</dt>
+    {% if lobby.current_state %}
+      <dd>{{ lobby.current_state }}</dd>
+    {% else %}
+      <dd>-</dd>
+    {% endif %}
     <dt>Start Time</dt>
     {% if lobby.started_time %}
       <dd>{{ lobby.started_time }}</dd>
@@ -47,10 +54,9 @@
       <tr>
         <th>ID</th>
         <th>Caption</th>
+        <th>IsActive</th>
         <th>Opened at</th>
         <th>Closed at</th>
-        <th>IsActive</th>
-        <th>IsAccepting</th>
       </tr>
       </thead>
       <tbody>
@@ -58,14 +64,13 @@
         <tr>
           <td>{{ quiz.index }}</td>
           <td>{{ quiz.caption }}</td>
-          <td>{{ quiz.opened_at }}</td>
-          <td>{{ quiz.closed_at }}</td>
           {% if quiz.is_active %}
             <td>Active</td>
           {% else %}
             <td>-</td>
           {% endif %}
-          <td>{{ quiz.is_accepting }}</td>
+          <td>{{ quiz.opened_at }}</td>
+          <td>{{ quiz.closed_at }}</td>
         </tr>
       {% endfor %}
       </tbody>

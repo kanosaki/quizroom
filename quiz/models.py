@@ -291,7 +291,6 @@ class Lobby(models.Model):
                 'opened_at': quiz.opened_at,
                 'closed_at': quiz.closed_at,
                 'is_active': quiz == self.active_quiz,
-                'is_accepting': quiz.is_accepting,
             }
 
     def participants(self):
