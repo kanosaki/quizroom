@@ -108,6 +108,14 @@ class QuizEntry(models.Model):
         self.closed_at = None
         self.save()
 
+    def open(self):
+        self.opened_at = timezone.now()
+        self.save()
+
+    def close(self):
+        self.closed_at = timezone.now()
+        self.save()
+
     def get_score(self, choice_index):
         return self.body.get_score(choice_index)
 
@@ -160,13 +168,16 @@ class QuizSeries(models.Model):
     def _load_first_quiz(self):
         first_quiz = self.ordered_quiz().first()
         self.active_quiz = first_quiz
+        self.active_quiz.open()
         self.save()
 
     def _load_next_quiz(self):
         ordered_quizes = list(self.ordered_quiz())
         next_index = ordered_quizes.index(self.active_quiz) + 1
+        self.active_quiz.close()
         if next_index <= len(ordered_quizes) - 1:
             self.active_quiz = ordered_quizes[next_index]
+            self.active_quiz.open()
         else:
             self.active_quiz = None
         self.save()
@@ -289,6 +300,8 @@ class Lobby(models.Model):
         self.current_state = 'QUIZ_OPENED'
         if self.active_quiz is None:
             self.go_next_quiz()
+        if self.active_quiz is not None:
+            self.active_quiz.open()
         self.save()
 
     def go_next_quiz(self):
