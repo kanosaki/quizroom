@@ -43,9 +43,9 @@ class Quiz(models.Model):
 
     def get_choice(self, choice_index):
         choices = self.answerchoice_set.all()
-        if choice_index >= choices.count():
+        if choice_index > choices.count():
             raise Exception('There is no such choice')
-        return choices[choice_index]
+        return choices[choice_index - 1]
 
     def get_score(self, choice_index):
         return self.get_choice(choice_index).base_score
