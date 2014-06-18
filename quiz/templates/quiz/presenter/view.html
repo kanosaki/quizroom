@@ -3,29 +3,33 @@
 
 {% block title %}Quizroom{% endblock %}
 
-{% if lobby.current_state == "QUIZ_OPENED" %}
-	{% block content %}
-		{% include 'quiz/presenter/question.html' %}
-	{% endif %}
-{% elif lobby.current_state == "MASTER_ANSWERING" %}
-	{% block page_js %}
-		<script src="{% static "d3/d3.min.js" %}"></script>
+{%block page_js%}
+
+	<script src="{% static "d3/d3.min.js" %}"></script>
+	{% if lobby.current_state == 'QUIZ_OPENED' %}
+		<!--<script>console.log("QUIZ_OPENED");</script>-->
+	{% elif lobby.current_state == 'MASTER_ANSWERING' %}
+		<!--<script>console.log("MASTER_ANSWERING");</script>-->
 		{% include 'quiz/presenter/result/result.js' %}
-	{% endblock %}
-	{% block content %}
-		{% include 'quiz/presenter/result/result.html' %}
+	{% elif lobby.current_state == 'SHOWING_ANSWER' %}
+		<!--<script>console.log("SHOWING_ANSWER");</script>-->
+	{% elif lobby.current_state == 'SHOWING_SCORE' %}
+		<!--<script>console.log("SHOWING_SCORE");</script>-->
+		{% include 'quiz/presenter/score/score.js' %}
 	{% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+{% if lobby.current_state == "QUIZ_OPENED" %}
+	{% include 'quiz/presenter/question.html' %}
+{% elif lobby.current_state == "MASTER_ANSWERING" %}
+	{% include 'quiz/presenter/result/result.html' %}
 {% elif lobby.current_state == "SHOWING_ANSWER" %}
-	{% block content %}
-		{% include 'quiz/presenter/answer.html' %}
-	{% endif %}
+	{% include 'quiz/presenter/answer.html' %}
 {% elif lobby.current_state == "SHOWING_SCORE" %}
-	{% block page_js %}
-		<script src="{% static "d3/d3.min.js" %}"></script>
-		{% include 'quiz/presenter/result/score.js' %}
-	{% endblock %}
-	{% block content %}
-		{% include 'quiz/presenter/result/score.html' %}
-	{% endif %}
+	{% include 'quiz/presenter/score/score.html' %}
+{% endif %}
 
 {% endblock %}
