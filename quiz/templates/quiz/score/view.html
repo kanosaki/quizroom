@@ -18,72 +18,6 @@
 	<script src="{% static "d3/d3.min.js" %}"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
-
-			//棒グラフ用にJSON整形
-			function chJSON(data){
-				var array = [0,0,0,0];
-				var result = new Array(4);
-				for(var i in data){
-					var id = data[i].choice_id - 1;
-					array[id] = array[id] + 1;
-				}
-				for(var i=0;i < result.length;i++){
-					result[i] = {'choice_id':parseInt(i)+1,'total':array[i] };
-				}
-				return result;
-			}
-			
-			//結果を棒グラフで表示
-			function makeBar(data){
-				$("#bar-demo").empty();
-				var barWidth = 50;
-				var width = (barWidth + 10) * data.length;
-				var height = 200;
-				var x = d3.scale.linear().domain([0, data.length]).range([0, width]);
-				var y = d3.scale.linear().domain([0, d3.max(data, function(d) { return d.total; })]).rangeRound([0, height]);
-				// グラフを表示するsvgエリアを作成
-				var barDemo = d3.select("#bar-demo")
-					.append("svg:svg")
-						.attr("width", width)
-						.attr("height", height+20);
-				//棒グラフの表示
-				barDemo.selectAll("rect")
-					.data(data)
-					.enter()
-					.append("svg:rect")
-						.attr("x", function(d, i) { return x(i); })
-						.attr("y", function(d) { return height - y(d.total); })
-						.attr("height", function(d) { return y(d.total); })
-						.attr("width", barWidth)
-						.attr("fill", "#2d578b");	    
-				//投票数を表示    
-				barDemo.selectAll("text")
-					.data(data)
-					.enter()
-					.append("svg:text")
-						.attr("x", function(d, i) { return x(i) + barWidth; })
-						.attr("y", function(d) { return height - y(d.total); })
-						.attr("dx", -barWidth/2)
-						.attr("dy", "1.2em")
-						.attr("text-anchor", "middle")
-						.text(function(d) { return d.total;})
-						.attr("fill", "white");
-							    
-				//問題数を表示    
-				barDemo.selectAll("text.yAxis")
-					.data(data)
-					.enter()
-					.append("svg:text")
-						.attr("x", function(d, i) { return x(i) + barWidth; })
-						.attr("y", height)
-						.attr("dx", -barWidth/2)
-						.attr("text-anchor", "middle")
-						.attr("style", "font-size: 20; font-family: Helvetica, sans-serif")
-						.text(function(d) { return d.choice_id;})
-						.attr("transform", "translate(0, 20)")
-						.attr("class", "yAxis");
-			}
-
 			//ランキング表作成
 			function makeRanking(data){
 				for(var i in data){
@@ -101,20 +35,6 @@
 				}
 			}
 
-
-			//GET後棒グラフを表示
-			$.get('{% url 'lobby_show' lobby.pk %}',
-				{
-					'type' : 'query',
-					'command' : 'all_answers'
-				},
-				function(data){
-					window.quiz.default_ajax_handler(data);
-					if(data.status == 'ok'){
-						makeBar(chJSON(data.content));
-					}
-				});
-
 			//GET後ランキング表を表示
 			$.get('{% url 'lobby_show' lobby.pk %}',
 				{
@@ -126,23 +46,14 @@
 					if(data.status == 'ok'){
 						makeRanking(data.content);
 					}
-				});
+			});
 		});
 	</script>
 {% endblock %}
 
 {% block content %}
 <div class="row">
-    <div class="col-lg-5">
-        <div class="jumbotron" align="center">
-            <p><h2>{{ quiz.caption}}</h2></p>
-            <p><h3>{{ quiz.get_content|safe }}</h3></p>
-        </div>
-        <div id="bar" class="jumbotron" align="center" style="padding-bottom:20px">
-            <p><h2>結果</h2></p><br>
-        </div>
-    </div>
-    <div class="col-lg-7">
+    <div class="col-xs-12">
         <div class="panel panel-default">
             <div class="panel-heading" align="center">
                 <h2>Ranking</h2>

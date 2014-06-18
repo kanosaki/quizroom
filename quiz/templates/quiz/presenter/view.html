@@ -1,0 +1,31 @@
+{% extends "quiz/base.html" %}
+{% load static %}
+
+{% block title %}Quizroom{% endblock %}
+
+{% if lobby.current_state == "QUIZ_OPENED" %}
+	{% block content %}
+		{% include 'quiz/presenter/question.html' %}
+	{% endif %}
+{% elif lobby.current_state == "MASTER_ANSWERING" %}
+	{% block page_js %}
+		<script src="{% static "d3/d3.min.js" %}"></script>
+		{% include 'quiz/presenter/result/result.js' %}
+	{% endblock %}
+	{% block content %}
+		{% include 'quiz/presenter/result/result.html' %}
+	{% endif %}
+{% elif lobby.current_state == "SHOWING_ANSWER" %}
+	{% block content %}
+		{% include 'quiz/presenter/answer.html' %}
+	{% endif %}
+{% elif lobby.current_state == "SHOWING_SCORE" %}
+	{% block page_js %}
+		<script src="{% static "d3/d3.min.js" %}"></script>
+		{% include 'quiz/presenter/result/score.js' %}
+	{% endblock %}
+	{% block content %}
+		{% include 'quiz/presenter/result/score.html' %}
+	{% endif %}
+
+{% endblock %}
