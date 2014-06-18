@@ -40,6 +40,7 @@
       <td>
         <a href="{% url 'lobby_show' lobby.pk %}" class="btn btn-primary">Show</a>
         <a href="{% url 'lobby_control' lobby.pk %}" class="btn btn-info">Control</a>
+        <a href="{% url 'lobby_presenter' lobby.pk %}" class="btn btn-info">Presenter</a>
         <button class="btn btn-info lobby-start" data-lobby-pk="{{ lobby.pk }}">Start</button>
       </td>
       </tr>

@@ -286,6 +286,10 @@ class ControlLobby(TemplateView):
         return utils.JsonStatuses.ok()
 
 
+class ViewLobbyPresenter(TemplateView):
+    template_name = 'quiz/presneter/view.html'
+
+
 class ActiveLobbyView(TemplateView):
     template_name = 'quiz/lobby/view.html'
 
