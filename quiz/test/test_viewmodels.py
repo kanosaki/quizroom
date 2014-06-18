@@ -222,10 +222,8 @@ class TestViewLobby(TestCase):
         res = decode_json(c1.get(self.url, {'type': 'query', 'command': 'answer_summary'}))
         self.assertEqual(res['status'], 'ok', res.get('message'))
         self.assertEqual([{'answerers': [{'is_you': False, 'name': 'test_user2', 'participant_id': 2}],
-                           'choice_id': 1,
-                           'number_of_answer': 1},
+                           'choice_id': 1},
                           {'answerers': [{'is_you': True, 'name': 'test_user1', 'participant_id': 1}],
-                           'choice_id': 2,
-                           'number_of_answer': 1}],
+                           'choice_id': 2}],
                          res['content'])
 

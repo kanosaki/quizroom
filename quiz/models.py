@@ -397,7 +397,6 @@ class Lobby(models.Model):
                      for ans in answerers]
             ret.append({
                 'choice_id': choice + 1,
-                'number_of_answer': len(answerers),
                 'answerers': anses,
             })
         return ret

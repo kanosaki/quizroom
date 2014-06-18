@@ -196,7 +196,6 @@ class ViewLobby(TemplateView):
             {'status': 'ok',
              'content': [
                 {'choice_id': 1,
-                 'number_of_answer': 2,
                  'answerers': [
                     {'name': 'test_user', 'participant_id': 1},
                     ...
