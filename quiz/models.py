@@ -211,7 +211,7 @@ class UserAnswer(models.Model):
     user = models.ForeignKey(Participant)
 
     def __str__(self):
-        return u'Ans %s' % self.selection
+        return u'Ans %s' % self.choice
 
     def score(self):
         return self.quiz.get_score(self.choice)
@@ -346,6 +346,20 @@ class Lobby(models.Model):
 
     def can_accept_answer(self, participant):
         return self.current_state == 'QUIZ_OPENED'  # TODO: Add master exception
+
+    def submit_answer(self, participant, choice_id):
+        active_quiz = self.active_quiz
+        try:
+            previous_ans = UserAnswer.objects.get(user=participant, quiz=active_quiz)
+            previous_ans.choice = choice_id
+            previous_ans.save()
+        except UserAnswer.DoesNotExist:
+            ans = UserAnswer(
+                quiz=self.active_quiz,
+                choice=int(choice_id),
+                user=participant,
+            )
+            ans.save()
 
 
 

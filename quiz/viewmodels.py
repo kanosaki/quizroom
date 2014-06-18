@@ -200,18 +200,12 @@ class ViewLobby(TemplateView):
             context = self.get_context_data(lobby_id=lobby_id)
             lobby = context['lobby']
             participant = context['participant']
-            active_quiz = lobby.active_quiz
             if not lobby.can_accept_answer(participant):
                 return utils.JsonStatuses.failed('Closed')
             if 'choice_id' not in request.POST:
                 return utils.JsonStatuses.failed('Invalid POST: choice_id required.')
             choice_id = request.POST['choice_id']
-            ans = UserAnswer(
-                quiz=active_quiz,
-                choice=int(choice_id),
-                user=context['participant'],
-            )
-            ans.save()
+            lobby.submit_answer(participant, choice_id)
             return utils.JsonStatuses.ok()
         else:
             return utils.JsonStatuses.failed('Unknown command')
