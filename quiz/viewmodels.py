@@ -272,8 +272,10 @@ class ControlLobby(TemplateView):
             lobby.go_next_quiz()
         elif command == 'close_submission':
             lobby.close_participant_submission()
-        elif command == 'show_scores':
+        elif command == 'close_master_submission':
             lobby.close_master_submission()
+        elif command == 'show_scores':
+            lobby.show_scores()
         elif command == 'next':
             lobby.go_next_quiz()
             if lobby.is_finished:

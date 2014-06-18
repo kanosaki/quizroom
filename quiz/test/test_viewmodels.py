@@ -77,10 +77,17 @@ class ControlLobbyTest(TestCase):
         self.assertIsNotNone(lobby.active_quiz)
         self.assertEqual(lobby.active_quiz.body.caption, 'First quiz')
         self.assertEqual('QUIZ_OPENED', lobby.current_state)
+
         res = decode_json(c.post(url, {'command': 'close_submission'}))
         self.assertEqual(res['status'], 'ok')
         lobby = active_lobby.get()
         self.assertEqual('MASTER_ANSWERING', lobby.current_state)
+
+        res = decode_json(c.post(url, {'command': 'close_master_submission'}))
+        self.assertEqual(res['status'], 'ok')
+        lobby = active_lobby.get()
+        self.assertEqual('SHOWING_ANSWER', lobby.current_state)
+
         res = decode_json(c.post(url, {'command': 'show_scores'}))
         self.assertEqual(res['status'], 'ok')
         lobby = active_lobby.get()

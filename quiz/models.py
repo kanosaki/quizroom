@@ -265,6 +265,10 @@ class Lobby(models.Model):
         self.save()
 
     def close_master_submission(self):
+        self.current_state = 'SHOWING_ANSWER'
+        self.save()
+
+    def show_scores(self):
         self.current_state = 'SHOWING_SCORE'
         self.save()
 
