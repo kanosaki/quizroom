@@ -10,12 +10,12 @@
 		<!--<script>console.log("QUIZ_OPENED");</script>-->
 	{% elif lobby.current_state == 'MASTER_ANSWERING' %}
 		<!--<script>console.log("MASTER_ANSWERING");</script>-->
-		{% include 'quiz/presenter/result/result.js' %}
+		<script src="{% static 'quiz/js/result.js' %}" type="text/javascript"></script>
 	{% elif lobby.current_state == 'SHOWING_ANSWER' %}
 		<!--<script>console.log("SHOWING_ANSWER");</script>-->
 	{% elif lobby.current_state == 'SHOWING_SCORE' %}
 		<!--<script>console.log("SHOWING_SCORE");</script>-->
-		{% include 'quiz/presenter/score/score.js' %}
+		<script src="{% static 'quiz/js/score.js' %}" type="text/javascript"></script>
 	{% endif %}
 
 {% endblock %}
