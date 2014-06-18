@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from collections import defaultdict
+
 from django.db import models
 from django.utils import timezone
 import django.contrib.auth
@@ -106,6 +108,14 @@ class QuizEntry(models.Model):
         self.closed_at = None
         self.save()
 
+    def open(self):
+        self.opened_at = timezone.now()
+        self.save()
+
+    def close(self):
+        self.closed_at = timezone.now()
+        self.save()
+
     def get_score(self, choice_index):
         return self.body.get_score(choice_index)
 
@@ -158,13 +168,16 @@ class QuizSeries(models.Model):
     def _load_first_quiz(self):
         first_quiz = self.ordered_quiz().first()
         self.active_quiz = first_quiz
+        self.active_quiz.open()
         self.save()
 
     def _load_next_quiz(self):
         ordered_quizes = list(self.ordered_quiz())
         next_index = ordered_quizes.index(self.active_quiz) + 1
+        self.active_quiz.close()
         if next_index <= len(ordered_quizes) - 1:
             self.active_quiz = ordered_quizes[next_index]
+            self.active_quiz.open()
         else:
             self.active_quiz = None
         self.save()
@@ -234,6 +247,19 @@ class Lobby(models.Model):
         ('SHOWING_SCORE', 'Showing score'),  # 親の解答が終了し，解答を受け付けている
         ('CLOSED', 'Closed'),  # すべての問題が終了し，Lobbyが閉じている状態
     )
+    PROPOSED_COMMANDS = {
+        'INACTIVE': 'start_quiz',
+        'QUIZ_OPENED': 'close_submission',
+        'MASTER_ANSWERING': 'close_master_submission',
+        'SHOWING_ANSWER': 'show_scores',
+        'SHOWING_SCORE': 'next',
+        'CLOSED': None,
+    }
+
+    @property
+    def proposed_command(self):
+        return self.PROPOSED_COMMANDS[self.current_state]
+
     quiz_series = models.ForeignKey(QuizSeries)
     players = models.ManyToManyField(Participant, null=True, blank=True)
     started_time = models.DateTimeField(null=True, blank=True)
@@ -263,7 +289,19 @@ class Lobby(models.Model):
         self.save()
 
     def close_master_submission(self):
+        self.current_state = 'SHOWING_ANSWER'
+        self.save()
+
+    def show_scores(self):
         self.current_state = 'SHOWING_SCORE'
+        self.save()
+
+    def open_quiz(self):
+        self.current_state = 'QUIZ_OPENED'
+        if self.active_quiz is None:
+            self.go_next_quiz()
+        if self.active_quiz is not None:
+            self.active_quiz.open()
         self.save()
 
     def go_next_quiz(self):
@@ -340,9 +378,29 @@ class Lobby(models.Model):
                 'choice_id': ans.choice,
             }
 
-    @property
     def all_answers(self):
         return list(self._fetch_all_answers())
+
+    def answer_summary(self, requester_uid=None):
+        choice_map = defaultdict(set)
+        try:
+            answers = list(UserAnswer.objects.filter(quiz=self.active_quiz))
+        except UserAnswer.DoesNotExist:
+            return {}
+        for ans in answers:
+            choice_map[ans.choice].add(ans)
+        ret = []
+        for (choice, answerers) in sorted(choice_map.items()):
+            anses = [{'name': ans.user.name,
+                      'participant_id': ans.user.id,
+                      'is_you': ans.user.pk == requester_uid}
+                     for ans in answerers]
+            ret.append({
+                'choice_id': choice + 1,
+                'number_of_answer': len(answerers),
+                'answerers': anses,
+            })
+        return ret
 
     def can_accept_answer(self, participant):
         return self.current_state == 'QUIZ_OPENED'  # TODO: Add master exception

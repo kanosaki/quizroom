@@ -35,6 +35,8 @@ class TestLobby(TestCase):
         lobby.close_participant_submission()
         self.assertEqual(lobby.current_state, 'MASTER_ANSWERING')
         lobby.close_master_submission()
+        self.assertEqual(lobby.current_state, 'SHOWING_ANSWER')
+        lobby.show_scores()
         self.assertEqual(lobby.current_state, 'SHOWING_SCORE')
 
         # 次の問題へ

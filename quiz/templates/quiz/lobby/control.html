@@ -20,11 +20,36 @@
 {% block content %}
   <h3>Lobby control</h3>
   <div id="commands">
-    <button data-command="activate" class="btn btn-default">ロビー初期化</button>
-    <button data-command="start_quiz" class="btn btn-default">問題開始</button>
-    <button data-command="close_submission" class="btn btn-default">解答提出締め切り</button>
-    <button data-command="show_scores" class="btn btn-default">現在順位発表へ</button>
-    <button data-command="next" class="btn btn-default">次の問題へ</button>
+    {% if not lobby.current_state %}
+      <button data-command="activate" class="btn btn-primary">ロビー初期化</button>
+    {% else %}
+      <button data-command="activate" class="btn btn-default">ロビー初期化</button>
+    {% endif %}
+    {% if 'start_quiz' == lobby.proposed_command %}
+      <button data-command="start_quiz" class="btn btn-primary">問題開始</button>
+    {% else %}
+      <button data-command="start_quiz" class="btn btn-default">問題開始</button>
+    {% endif %}
+    {% if 'close_submission' == lobby.proposed_command %}
+      <button data-command="close_submission" class="btn btn-primary">子・締め切り</button>
+    {% else %}
+      <button data-command="close_submission" class="btn btn-default">子・締め切り</button>
+    {% endif %}
+    {% if 'close_master_submission' == lobby.proposed_command %}
+      <button data-command="close_master_submission" class="btn btn-primary">親・締め切り</button>
+    {% else %}
+      <button data-command="close_master_submission" class="btn btn-default">親・締め切り</button>
+    {% endif %}
+    {% if 'show_scores' == lobby.proposed_command %}
+      <button data-command="show_scores" class="btn btn-primary">現在順位発表へ</button>
+    {% else %}
+      <button data-command="show_scores" class="btn btn-default">現在順位発表へ</button>
+    {% endif %}
+    {% if 'next' == lobby.proposed_command %}
+      <button data-command="next" class="btn btn-primary">次の問題へ</button>
+    {% else %}
+      <button data-command="next" class="btn btn-default">次の問題へ</button>
+    {% endif %}
   </div>
   <h4>Lobby</h4>
   <dl class="dl-horizontal">

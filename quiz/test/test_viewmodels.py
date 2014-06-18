@@ -77,10 +77,17 @@ class ControlLobbyTest(TestCase):
         self.assertIsNotNone(lobby.active_quiz)
         self.assertEqual(lobby.active_quiz.body.caption, 'First quiz')
         self.assertEqual('QUIZ_OPENED', lobby.current_state)
+
         res = decode_json(c.post(url, {'command': 'close_submission'}))
         self.assertEqual(res['status'], 'ok')
         lobby = active_lobby.get()
         self.assertEqual('MASTER_ANSWERING', lobby.current_state)
+
+        res = decode_json(c.post(url, {'command': 'close_master_submission'}))
+        self.assertEqual(res['status'], 'ok')
+        lobby = active_lobby.get()
+        self.assertEqual('SHOWING_ANSWER', lobby.current_state)
+
         res = decode_json(c.post(url, {'command': 'show_scores'}))
         self.assertEqual(res['status'], 'ok')
         lobby = active_lobby.get()
@@ -129,7 +136,7 @@ class TestViewLobby(TestCase):
         res = decode_json(c.post(self.url, {
             'command': 'submit_answer',
             'lobby_id': 1,
-            'choice_id': 1,  # 1 point choice
+            'choice_id': 2,  # 1 point choice
         }))
         self.assertEqual(res['status'], 'ok', res.get('message'))
         res = decode_json(c.get(self.url, {'type': 'query', 'command': 'score_list'}))
@@ -152,13 +159,13 @@ class TestViewLobby(TestCase):
         res = decode_json(c1.post(self.url, {
             'command': 'submit_answer',
             'lobby_id': 1,
-            'choice_id': 1,  # 1 point choice
+            'choice_id': 2,  # 1 point choice
         }))
         self.assertEqual(res['status'], 'ok', res.get('message'))
         res = decode_json(c2.post(self.url, {
             'command': 'submit_answer',
             'lobby_id': 1,
-            'choice_id': 0,  # 0 point choice
+            'choice_id': 1,  # 0 point choice
         }))
         self.assertEqual(res['status'], 'ok', res.get('message'))
 
@@ -191,3 +198,34 @@ class TestViewLobby(TestCase):
              'participant_id': 2,
              'is_you': True},
         ])
+
+    def test_answer_summary(self):
+        c1 = Client()
+        c2 = Client()
+
+        c1.post('/user/register', {'name': 'test_user1'})
+        c2.post('/user/register', {'name': 'test_user2'})
+
+        res = decode_json(c1.post(self.url, {
+            'command': 'submit_answer',
+            'lobby_id': 1,
+            'choice_id': 1,  # 1 point choice
+        }))
+        self.assertEqual(res['status'], 'ok', res.get('message'))
+        res = decode_json(c2.post(self.url, {
+            'command': 'submit_answer',
+            'lobby_id': 1,
+            'choice_id': 0,  # 0 point choice
+        }))
+        self.assertEqual(res['status'], 'ok', res.get('message'))
+
+        res = decode_json(c1.get(self.url, {'type': 'query', 'command': 'answer_summary'}))
+        self.assertEqual(res['status'], 'ok', res.get('message'))
+        self.assertEqual([{'answerers': [{'is_you': False, 'name': 'test_user2', 'participant_id': 2}],
+                           'choice_id': 1,
+                           'number_of_answer': 1},
+                          {'answerers': [{'is_you': True, 'name': 'test_user1', 'participant_id': 1}],
+                           'choice_id': 2,
+                           'number_of_answer': 1}],
+                         res['content'])
+

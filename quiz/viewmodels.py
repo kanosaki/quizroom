@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView  # , DeleteView
 from django.views.generic.detail import DetailView
@@ -6,11 +6,12 @@ from django.views.generic import TemplateView
 from django.shortcuts import redirect, render, get_object_or_404
 
 from quiz.forms import ParticipantForm, QuizForm
-from quiz.models import Participant, Quiz, Lobby, UserAnswer
+from quiz.models import Participant, Quiz, Lobby
 from quiz import control
 import quizhub.lobby
 import utils
 from utils import api_guard
+
 
 
 
@@ -138,6 +139,12 @@ class ViewLobby(TemplateView):
         lobby = Lobby.objects.get(pk=self.kwargs['pk'])
         return lobby.all_answers()
 
+    def get_answer_summary(self):
+        lobby = Lobby.objects.get(pk=self.kwargs['pk'])
+        return lobby.answer_summary(
+            self.request.session.get('uid')
+        )
+
     def query_data(self, request, *args, **kw):
         command = request.GET.get('command')
         if command == 'score_list':
@@ -145,6 +152,8 @@ class ViewLobby(TemplateView):
             return utils.JsonStatuses.ok(content=self.get_score_list(uid))
         elif command == 'all_answers':
             return utils.JsonStatuses.ok(content=self.get_all_answers())
+        elif command == 'answer_summary':
+            return utils.JsonStatuses.ok(content=self.get_answer_summary())
         else:
             return utils.JsonStatuses.failed('Unknown command %s' % command)
 
@@ -181,6 +190,18 @@ class ViewLobby(TemplateView):
              'content': [
                 {'name': 'test_user', 'participant_id': 1, 'choice_id': 1},
                 ....
+             ]}
+        * ?type=query&command=answer_summary
+            この問題の，それぞれの選択肢に何票入ったかを集計します
+            {'status': 'ok',
+             'content': [
+                {'choice_id': 1,
+                 'number_of_answer': 2,
+                 'answerers': [
+                    {'name': 'test_user', 'participant_id': 1},
+                    ...
+                 ],
+                 ...
              ]}
         """
         try:
@@ -248,11 +269,13 @@ class ControlLobby(TemplateView):
         if command == 'activate':
             lobby.initialize(force=True)
         elif command == 'start_quiz':
-            lobby.go_next_quiz()
+            lobby.open_quiz()
         elif command == 'close_submission':
             lobby.close_participant_submission()
-        elif command == 'show_scores':
+        elif command == 'close_master_submission':
             lobby.close_master_submission()
+        elif command == 'show_scores':
+            lobby.show_scores()
         elif command == 'next':
             lobby.go_next_quiz()
             if lobby.is_finished:
@@ -261,6 +284,10 @@ class ControlLobby(TemplateView):
             return utils.JsonStatuses.failed('Unknown command!')
         quizhub.lobby.lobby_hub.request_update()
         return utils.JsonStatuses.ok()
+
+
+class ViewLobbyPresenter(TemplateView):
+    template_name = 'quiz/presneter/view.html'
 
 
 class ActiveLobbyView(TemplateView):

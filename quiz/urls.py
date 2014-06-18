@@ -19,6 +19,7 @@ lobby_urls = patterns(
     url(r'^control/(?P<pk>\d+)$', viewmodels.ControlLobby.as_view(), name='lobby_control'),
     url(r'^ranking/now$', viewmodels.ViewLobbyRankingNow.as_view(), name='lobby_ranking_now'),
     url(r'^ranking/(?P<pk>\d+)$', viewmodels.ViewLobbyRanking.as_view(), name='lobby_ranking'),
+    url(r'^presenter/(?P<pk>\d+)$', viewmodels.ViewLobbyPresenter.as_view(), name='lobby_presenter'),
 )
 
 urlpatterns = patterns(
