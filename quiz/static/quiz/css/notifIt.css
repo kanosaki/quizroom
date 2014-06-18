@@ -28,7 +28,7 @@
 /* You are free to change all of this */
 .success{
     background-color: yellowgreen;
-    color: white;
+    color: black;
 }
 .error{
     background-color: orangered;
@@ -45,4 +45,8 @@
 .default{
     background-color: #EEE;
     color: #444;
+}
+.you{
+	background-color: yellowgreen;
+	color: black;
 }

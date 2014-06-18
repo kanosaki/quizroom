@@ -9,8 +9,8 @@
     window.quiz.lobby_id = '{{ lobby.pk }}';
     window.quiz.lobby_token = null; // TODO: set token here.
     $(document).ready(function () {
-      $(".btn-choice").click(function (e) {
-        var num = $(e.target).data("choice-num");
+      $(".btn-choice").click(function () {
+        var num = $(this).data("choice-num");
         $.post('{% url 'lobby_show' lobby.pk %}',
                 {
                   'command': 'submit_answer',
