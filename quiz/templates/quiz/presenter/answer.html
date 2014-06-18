@@ -1,0 +1,24 @@
+<div class="jumbotron">
+	<h2>{{ quiz.caption }}</h2>
+	<div id="quiz-content-container">
+		<p>{{ quiz.get_content|safe }}</p>
+	</div> 
+</div>
+
+<div>
+	{% for i in choices %}
+	<div class="row ans-row">
+		<div class="col-xs-2 ans-num"><h3>{{ forloop.container }}:</h3></div>
+		<div class="col-xs-10">
+			{% if answer == {{forloop.container}}%}
+				<button class="btn btn-warning btn-lg btn-block">
+					{{ choice.get_content|safe }}
+				</button>
+			{% else %}
+				<button class="btn btn-primary btn-lg btn-block">
+					{{ choice.get_content|safe }}
+				</button>
+		</div>
+	</div>
+	{% endfor %}
+</div>
