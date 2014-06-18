@@ -19,8 +19,7 @@
                 },
                 function (data) {
                   window.quiz.default_ajax_handler(data);
-                  var obj = JSON.parse(data);
-                  if (obj.status == 'ok') {
+                  if (data.status == 'ok') {
                     $(".btn-choice").attr('disabled', true);
                   }
                 });
