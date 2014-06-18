@@ -269,7 +269,7 @@ class ControlLobby(TemplateView):
         if command == 'activate':
             lobby.initialize(force=True)
         elif command == 'start_quiz':
-            lobby.go_next_quiz()
+            lobby.open_quiz()
         elif command == 'close_submission':
             lobby.close_participant_submission()
         elif command == 'close_master_submission':

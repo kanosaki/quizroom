@@ -236,6 +236,19 @@ class Lobby(models.Model):
         ('SHOWING_SCORE', 'Showing score'),  # 親の解答が終了し，解答を受け付けている
         ('CLOSED', 'Closed'),  # すべての問題が終了し，Lobbyが閉じている状態
     )
+    PROPOSED_COMMANDS = {
+        'INACTIVE': 'start_quiz',
+        'QUIZ_OPENED': 'close_submission',
+        'MASTER_ANSWERING': 'close_master_submission',
+        'SHOWING_ANSWER': 'show_scores',
+        'SHOWING_SCORE': 'next',
+        'CLOSED': None,
+    }
+
+    @property
+    def proposed_command(self):
+        return self.PROPOSED_COMMANDS[self.current_state]
+
     quiz_series = models.ForeignKey(QuizSeries)
     players = models.ManyToManyField(Participant, null=True, blank=True)
     started_time = models.DateTimeField(null=True, blank=True)
@@ -270,6 +283,12 @@ class Lobby(models.Model):
 
     def show_scores(self):
         self.current_state = 'SHOWING_SCORE'
+        self.save()
+
+    def open_quiz(self):
+        self.current_state = 'QUIZ_OPENED'
+        if self.active_quiz is None:
+            self.go_next_quiz()
         self.save()
 
     def go_next_quiz(self):
