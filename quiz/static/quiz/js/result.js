@@ -1,9 +1,13 @@
 $(document).ready(function(){
 	//棒グラフ用にJSON整形
 	function chJSON(data){
-		var result = new Array(4);
-		for(var i=0;i<result.length;i++){
-			result[i] = {'choice_id':data[i].choice_id,'total':data[i].answerers.length}
+		var result = [0,0,0,0];
+		for(var i in result){
+			result[i] = {'choice_id':0,'total':0};
+		}
+		for(var i in data){
+			var cid = data[i].choice_id;
+			result[cid] = {'choice_id':cid,'total':data[i].answerers.length};
 		}
 		return result;
 	}
@@ -56,33 +60,34 @@ $(document).ready(function(){
 				.text(function(d) { return d.choice_id;})
 				.attr("transform", "translate(0, 20)")
 				.attr("class", "yAxis");
-		}
-	});
+	}
 
 	function makeScore(data){
-		var choice =  data.choice_id;
-		for(var i in data.answerers){
-			var msg = '<tr>';
-			//msg = msg + '<td>' + data[i].rank + '</td>';
-			msg = msg + '<td>' + data[i].name + '</td>';
-			msg = msg + '<td>' + choice + '</td>';
-			msg = msg + '</tr>';
-			$("table#score tbody").append(msg);
+		for(var i in data){
+			var cid = data[i].choice_id;
+			var obj = data[i].answerers;
+			for(var j in obj){
+				var msg = '<tr>';
+				//msg = msg + '<td>' + data[i].rank + '</td>';
+				msg = msg + '<td>' + obj[j].name + '</td>';
+				msg = msg + '<td>' + cid + '</td>';
+				msg = msg + '</tr>';
+				$("table#result tbody").append(msg);
+			}
 		}
 	}
 
-	$.get('{% url 'lobby_show' lobby.pk%}',
+	$.get(url,
 		{
-			'type':'query',
-			'answer_summary'
+			'type' : 'query',
+			'command' : 'answer_summary'
 		},
 		function(data){
 			window.quiz.default_ajax_handler(data);
-				if(data.status == 'ok'){
-					console.log(data.content);
-					//makeBar(chJSON(data.content));
-					//makeScore(data);
-				}
+			if(data.status == 'ok'){
+				makeBar(chJSON(data.content));
+				makeScore(data.content);
 			}
-		);
-	});
+		}
+	);
+});
