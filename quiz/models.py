@@ -83,8 +83,11 @@ class AnswerChoice(models.Model):
 
 class QuizEntry(models.Model):
     body = models.ForeignKey(Quiz)
-
     order = models.IntegerField(help_text=u"何問目かを表す")
+
+    master_choice = models.IntegerField(
+        null=True, blank=True
+    )
 
     opened_at = models.DateTimeField(
         null=True, blank=True,
@@ -123,10 +126,28 @@ class QuizEntry(models.Model):
 
     @property
     def choices(self):
-        return self.body.answerchoice_set.all()
+        if self.master_choice is None:
+            return self.body.answerchoice_set.all()
+        else:
+            for (index, ans) in enumerate(self.body.answerchoice_set.all()):
+                yield AnswerChoiceEntry(index == self.master_choice, ans)
 
     def __str__(self):
         return u'Quiz Series entry %d' % self.id
+
+    def set_master_answer(self, choice):
+        self.master_choice = choice
+        self.save()
+        # TODO: Cache score here
+
+
+class AnswerChoiceEntry(object):
+    def __init__(self, is_correct, answer_choice):
+        self.is_correct_answer = is_correct
+        self.answer_choice = answer_choice
+
+    def __getattr__(self, key):
+        return getattr(self.answer_choice, key)
 
 
 class QuizSeriesFinished(Exception):
@@ -431,6 +452,10 @@ class Lobby(models.Model):
                 user=participant,
             )
             ans.save()
+
+    def submit_master_answer(self, choice_id):
+        self.active_quiz.set_master_answer(choice_id)
+
 
 
 
