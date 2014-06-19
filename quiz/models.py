@@ -248,6 +248,9 @@ class Participant(models.Model):
     def __str__(self):
         return u'Participant %s' % self.name
 
+    def __lt__(self, other):
+        return self.pk < other.pk
+
 
 class UserAnswer(models.Model):
     quiz = models.ForeignKey(QuizEntry)
