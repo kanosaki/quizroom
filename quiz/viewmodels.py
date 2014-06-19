@@ -8,7 +8,6 @@ from django.shortcuts import redirect, render, get_object_or_404
 from quiz.forms import ParticipantForm, QuizForm
 from quiz.models import Participant, Quiz, Lobby
 from quiz import control
-import quizhub.lobby
 import utils
 from utils import api_guard
 
@@ -281,7 +280,6 @@ class ControlLobby(TemplateView):
                 return utils.JsonStatuses.failed('Already closed!')
         else:
             return utils.JsonStatuses.failed('Unknown command!')
-        quizhub.lobby.lobby_hub.request_update()
         return utils.JsonStatuses.ok()
 
 

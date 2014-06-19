@@ -7,6 +7,8 @@ from django.utils import timezone
 import django.contrib.auth
 from django.template.loader import render_to_string
 
+from quizhub.lobby import hub
+
 
 class KVS(models.Model):
     key = models.CharField(primary_key=True, max_length=100)
@@ -260,10 +262,6 @@ class Lobby(models.Model):
         'CLOSED': None,
     }
 
-    @property
-    def proposed_command(self):
-        return self.PROPOSED_COMMANDS[self.current_state]
-
     quiz_series = models.ForeignKey(QuizSeries)
     players = models.ManyToManyField(Participant, null=True, blank=True)
     started_time = models.DateTimeField(null=True, blank=True)
@@ -273,6 +271,18 @@ class Lobby(models.Model):
         choices=STATES,
         null=True, blank=True
     )
+
+    def on_state_changed(self, new_state):
+        hub.request_update(self.pk)
+
+    def change_state(self, next_state):
+        self.current_state = next_state
+        self.save()
+        self.on_state_changed(self.current_state)
+
+    @property
+    def proposed_command(self):
+        return self.PROPOSED_COMMANDS[self.current_state]
 
     def __str__(self):
         return u'Lobby %d' % self.id
@@ -285,23 +295,23 @@ class Lobby(models.Model):
         self.quiz_series.initialize()
         self.started_time = timezone.now()
         self.finished_time = None
-        self.current_state = 'INACTIVE'
+        self.change_state('INACTIVE')
         self.save()
 
     def close_participant_submission(self):
-        self.current_state = 'MASTER_ANSWERING'
+        self.change_state('MASTER_ANSWERING')
         self.save()
 
     def close_master_submission(self):
-        self.current_state = 'SHOWING_ANSWER'
+        self.change_state('SHOWING_ANSWER')
         self.save()
 
     def show_scores(self):
-        self.current_state = 'SHOWING_SCORE'
+        self.change_state('SHOWING_SCORE')
         self.save()
 
     def open_quiz(self):
-        self.current_state = 'QUIZ_OPENED'
+        self.change_state('QUIZ_OPENED')
         if self.active_quiz is None:
             self.go_next_quiz()
         if self.active_quiz is not None:
@@ -312,9 +322,9 @@ class Lobby(models.Model):
         self.quiz_series.go_next_quiz()
         if self.active_quiz is None:
             self.finished_time = timezone.now()  # finished
-            self.current_state = 'CLOSED'
+            self.change_state('CLOSED')
         else:
-            self.current_state = 'QUIZ_OPENED'
+            self.change_state('QUIZ_OPENED')
         self.save()
 
     @property

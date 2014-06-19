@@ -1,4 +1,5 @@
 import json
+from collections import defaultdict
 
 from tornado import websocket
 from tornado import web
@@ -26,9 +27,6 @@ class LobbyHub(object):
         self.broadcast_json({'type': 'request_update'})
 
 
-lobby_hub = LobbyHub()
-
-
 class LobbyWebSocketHandler(websocket.WebSocketHandler):
     def open(self, lobby_id):
         lobby_hub.join(self)
@@ -48,3 +46,19 @@ class LobbyHubHandler(web.RequestHandler):
         typ = self.get_argument('type')
         if typ == 'request_update':
             lobby_hub.request_update()
+
+
+class HubManager(object):
+    def __init__(self):
+        self.hubs = defaultdict(LobbyHub)
+
+    def send_json(self, lobby_id, msg):
+        hub = self.hubs[lobby_id]
+        hub.broadcast_json(msg)
+
+    def request_update(self, lobby_id):
+        self.hubs[lobby_id].request_update()
+
+
+hub = HubManager()
+
