@@ -122,7 +122,7 @@ class QuizEntry(models.Model):
         self.save()
 
     def get_score(self, choice_index):
-        return self.body.get_score(choice_index)
+        return choice_index == self.master_choice
 
     @property
     def choices(self):

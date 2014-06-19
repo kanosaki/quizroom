@@ -8,14 +8,14 @@
       $("#start-default-robby").click(function () {
         $.post('{% url 'lobby_now' %}',
                 {'id': 'default'},
-                window.quiz.handle_ajax_response);
+                window.quiz.default_ajax_handler);
       });
 
       $(".lobby-start").click(function(e){
         var lobby_pk = $(e.target).data('lobby-pk');
         $.post('{% url 'lobby_now' %}',
                 {'id': lobby_pk},
-                window.quiz.handle_ajax_response);
+                window.quiz.default_ajax_handler);
       });
     });
   </script>

@@ -68,7 +68,7 @@
     username: '{{ username }}'
   };
 
-  quiz.lobby_id = {{ lobby.id }};
+  quiz.lobby_id = {{ lobby.id|default:0 }};
 </script>
 <script type="text/javascript" src="{% static "quiz/js/common.js" %}"></script>
 <script type="text/javascript" src="{% static "quiz/js/base.js" %}"></script>
