@@ -14,8 +14,8 @@ class LobbyHub(object):
         logging.info("JOIN handlers are now %d" % len(self.handlers))
 
     def leave(self, handler):
+        self.handlers.remove(handler)
         logging.info("LEAVE handlers are now %d" % len(self.handlers))
-        self.handlers.add(handler)
 
     def broadcast(self, msg):
         for handler in self.handlers:
