@@ -225,12 +225,12 @@ class ViewLobby(TemplateView):
                 if lobby.current_state == 'MASTER_ANSWERING':
                     lobby.submit_master_answer(choice_id)
                 else:
-                    return utils.JsonStatuses.failed('Closed')
+                    return utils.JsonStatuses.failed('現在は回答できません')
             else:
                 if lobby.current_state == 'QUIZ_OPENED':
                     lobby.submit_answer(participant, choice_id)
                 else:
-                    return utils.JsonStatuses.failed('Closed')
+                    return utils.JsonStatuses.failed('現在は回答できません')
             return utils.JsonStatuses.ok()
         else:
             return utils.JsonStatuses.failed('Unknown command')
