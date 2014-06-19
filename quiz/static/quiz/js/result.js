@@ -3,11 +3,11 @@ $(document).ready(function(){
 	function chJSON(data){
 		var result = [0,0,0,0];
 		for(var i in result){
-			result[i] = {'choice_id':0,'total':0};
+			result[i] = {'choice_id': parseInt(i)+1 ,'total':0};
 		}
 		for(var i in data){
 			var cid = data[i].choice_id;
-			result[cid] = {'choice_id':cid,'total':data[i].answerers.length};
+			result[cid-1] = {'choice_id':cid,'total':data[i].answerers.length};
 		}
 		return result;
 	}
@@ -85,14 +85,15 @@ $(document).ready(function(){
 		function(data){
 			window.quiz.default_ajax_handler(data);
 			if(data.status == 'ok'){
+				console.log(data.content);
 				makeBar(chJSON(data.content));
 				makeScore(data.content);
 			}
 		}
 	);
 
-	return $("[data-sticky_column]").sticky_in_parent({
+	$("[data-sticky_column]").stick_in_parent({
 		parrent: "[data-sticky_parent]",
-		offset_top:70;
+		offset_top:70
 	});
 });
