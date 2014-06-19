@@ -90,4 +90,9 @@ $(document).ready(function(){
 			}
 		}
 	);
+
+	return $("[data-sticky_column]").sticky_in_parent({
+		parrent: "[data-sticky_parent]",
+		offset_top:70;
+	});
 });
