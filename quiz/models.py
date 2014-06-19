@@ -126,7 +126,7 @@ class QuizEntry(models.Model):
         return choice_index == self.master_choice
 
     def _wrapped_choices(self):
-        for (index, ans) in enumerate(self.body.answerchoice_set.all()):
+        for (index, ans) in enumerate(self.body.answerchoice_set.all(), start=1):
             yield AnswerChoiceEntry(index == self.master_choice, ans)
 
     @property

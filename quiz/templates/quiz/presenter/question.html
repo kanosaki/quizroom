@@ -8,7 +8,7 @@
 <div>
 	{% for choice in choices %}
 	<div class="row ans-row">
-		<div class="col-xs-2 ans-num"><h3>{{ forloop.container }}:</h3></div>
+		<div class="col-xs-2 ans-num"><h3>{{ forloop.counter }}:</h3></div>
 		<div class="col-xs-10">
 			<button class="btn btn-primary btn-lg btn-block">
 				{{ choice.get_content|safe }}
