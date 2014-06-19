@@ -12,10 +12,6 @@ import utils
 from utils import api_guard
 
 
-
-
-
-
 # ----------------------------------
 # User
 # ----------------------------------
@@ -290,11 +286,16 @@ class ViewLobbyPresenter(TemplateView):
         lobby_id = self.kwargs.get('pk')
         lobby = get_object_or_404(Lobby, pk=lobby_id)
         active_quiz = lobby.active_quiz
+        if active_quiz is not None:
+            choices = active_quiz.choices
+        else:
+            choices = []
         kw.update({
             'lobby': lobby,
             'quiz': active_quiz,
-            'choices': active_quiz.choices,
+            'choices': choices,
         })
+        return kw
 
 
 class ActiveLobbyView(TemplateView):
