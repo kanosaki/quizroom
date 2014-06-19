@@ -16,7 +16,7 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
   <link href="{% static "quiz/css/notifIt.css" %}" rel="stylesheet">
-  <link href="{% static "quiz/css/quizcontent.css" %}" rel="stylesheet">
+  {% block page_css %}{% endblock %}
 </head>
 <body>
 <!-- NAVBAR -->
@@ -67,6 +67,8 @@
   quiz.Navbar = {
     username: '{{ username }}'
   };
+
+  quiz.lobby_id = {{ lobby.id }};
 </script>
 <script type="text/javascript" src="{% static "quiz/js/common.js" %}"></script>
 <script type="text/javascript" src="{% static "quiz/js/base.js" %}"></script>

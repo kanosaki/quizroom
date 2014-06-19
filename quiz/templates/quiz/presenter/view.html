@@ -3,10 +3,14 @@
 
 {% block title %}Quizroom{% endblock %}
 
-{%block page_js%}
+{% block page_css %}
+<link href="{% static "quiz/css/quizcontent.css" %}" rel="stylesheet">
+{% endblock %}
 
-	<script src="{% static "d3/d3.min.js" %}"></script>
-	{% if lobby.current_state == 'QUIZ_OPENED'  %}
+{%block page_js%}
+  <script src="{% static "quiz/js/lobby.js" %}" type="text/javascript"></script>
+	<script src="{% static "d3/d3.min.js" %}" type="text/javascript"></script>
+	{% if lobby.current_state == 'QUIZ_OPENED' %}
 	{% elif lobby.current_state == 'MASTER_ANSWERING' %}
 		<script>window.url = "{% url 'lobby_show' lobby.pk %}";</script>
 		<script src="{% static 'quiz/js/result.js' %}" type="text/javascript"></script>

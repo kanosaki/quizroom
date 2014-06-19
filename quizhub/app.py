@@ -4,7 +4,7 @@ import django.core.handlers.wsgi
 import tornado
 from tornado.options import options
 
-from quizhub.lobby import LobbyWebSocketHandler, LobbyHubHandler
+from quizhub.lobby import LobbyWebSocketHandler
 
 
 def init_app():
@@ -14,7 +14,6 @@ def init_app():
     )
     application = tornado.web.Application([
         (r'/ws/lobby/(?P<lobby_id>.+)', LobbyWebSocketHandler),
-        (r'/hub/lobby/(?P<lobby_id>.+)', LobbyHubHandler),
         (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': options.static_path}),
         (r'.*', tornado.web.FallbackHandler, dict(fallback=django_app)),
     ])

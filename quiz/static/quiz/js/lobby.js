@@ -13,7 +13,7 @@
     socket.onmessage = function (sock_msg) {
         var msg = JSON.parse(sock_msg.data);
         if (msg.type == 'request_update') {
-            // ...
+            location.reload();
         }
     };
 })();
