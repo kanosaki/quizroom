@@ -25,11 +25,11 @@
 {% if lobby.current_state == "QUIZ_OPENED" %}
 	{% include 'quiz/presenter/question.html' %}
 {% elif lobby.current_state == "MASTER_ANSWERING" %}
-	{% include 'quiz/presenter/result/result.html' %}
+	{% include 'quiz/presenter/result.html' %}
 {% elif lobby.current_state == "SHOWING_ANSWER" %}
 	{% include 'quiz/presenter/answer.html' %}
 {% elif lobby.current_state == "SHOWING_SCORE" %}
-	{% include 'quiz/presenter/score/score.html' %}
+	{% include 'quiz/presenter/score.html' %}
 {% endif %}
 
 {% endblock %}

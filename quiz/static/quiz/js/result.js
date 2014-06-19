@@ -74,10 +74,10 @@
 
 		function makeScore(data){
 			var choice =  data.choice_id;
-			for(var obj in data.answerers){
+			for(var i in data.answerers){
 				var msg = '<tr>';
 				//msg = msg + '<td>' + data[i].rank + '</td>';
-				msg = msg + '<td>' + obj.name + '</td>';
+				msg = msg + '<td>' + data[i].name + '</td>';
 				msg = msg + '<td>' + choice + '</td>';
 				msg = msg + '</tr>';
 				$("table#score tbody").append(msg);
