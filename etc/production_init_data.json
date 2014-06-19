@@ -444,6 +444,7 @@
   "model": "quiz.quizentry", 
   "fields": {
     "body": 1, 
+    "master_choice": null, 
     "closed_at": null, 
     "opened_at": null, 
     "order": 1, 
@@ -455,6 +456,7 @@
   "model": "quiz.quizentry", 
   "fields": {
     "body": 2, 
+    "master_choice": null, 
     "closed_at": null, 
     "opened_at": null, 
     "order": 2, 
@@ -466,6 +468,7 @@
   "model": "quiz.quizentry", 
   "fields": {
     "body": 3, 
+    "master_choice": null, 
     "closed_at": null, 
     "opened_at": null, 
     "order": 3, 
@@ -477,6 +480,7 @@
   "model": "quiz.quizentry", 
   "fields": {
     "body": 4, 
+    "master_choice": null, 
     "closed_at": null, 
     "opened_at": null, 
     "order": 4, 
@@ -488,6 +492,7 @@
   "model": "quiz.quizentry", 
   "fields": {
     "body": 5, 
+    "master_choice": null, 
     "closed_at": null, 
     "opened_at": null, 
     "order": 5, 
@@ -499,6 +504,7 @@
   "model": "quiz.quizentry", 
   "fields": {
     "body": 6, 
+    "master_choice": null, 
     "closed_at": null, 
     "opened_at": null, 
     "order": 6, 
@@ -510,6 +516,7 @@
   "model": "quiz.quizentry", 
   "fields": {
     "body": 7, 
+    "master_choice": null, 
     "closed_at": null, 
     "opened_at": null, 
     "order": 7, 
@@ -521,6 +528,7 @@
   "model": "quiz.quizentry", 
   "fields": {
     "body": 8, 
+    "master_choice": null, 
     "closed_at": null, 
     "opened_at": null, 
     "order": 8, 
@@ -532,6 +540,7 @@
   "model": "quiz.quizentry", 
   "fields": {
     "body": 9, 
+    "master_choice": null, 
     "closed_at": null, 
     "opened_at": null, 
     "order": 9, 
@@ -543,6 +552,7 @@
   "model": "quiz.quizentry", 
   "fields": {
     "body": 10, 
+    "master_choice": null, 
     "closed_at": null, 
     "opened_at": null, 
     "order": 10, 

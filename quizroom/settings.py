@@ -121,7 +121,7 @@ BOWER_INSTALLED_APPS = (
     'jquery',
     'jquery-cookie',
     'underscore',
-    'sitcky-kit',
+    'sticky-kit',
 
     'qunit',
 )
