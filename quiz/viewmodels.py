@@ -204,6 +204,9 @@ class ViewLobby(TemplateView):
         try:
             if request.GET.get('type') == 'query':
                 return self.query_data(request, *args, **kwargs)
+        except Exception as e:
+            return utils.JsonStatuses.failed(str(e))
+        try:
             context = self.get_context_data(
                 lobby_id=kwargs['pk']
             )
