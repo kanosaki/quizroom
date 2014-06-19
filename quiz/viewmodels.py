@@ -301,12 +301,14 @@ class ViewLobbyPresenter(TemplateView):
         lobby = get_object_or_404(Lobby, pk=lobby_id)
         active_quiz = lobby.active_quiz
         if active_quiz is not None:
-            choices = active_quiz.choices
+            quiz_body = active_quiz.body
+            choices = list(active_quiz.choices)
         else:
             choices = []
+            quiz_body = None
         kw.update({
             'lobby': lobby,
-            'quiz': active_quiz,
+            'quiz': quiz_body,
             'choices': choices,
         })
         return kw

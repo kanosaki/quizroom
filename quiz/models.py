@@ -125,13 +125,16 @@ class QuizEntry(models.Model):
     def get_score(self, choice_index):
         return choice_index == self.master_choice
 
+    def _wrapped_choices(self):
+        for (index, ans) in enumerate(self.body.answerchoice_set.all()):
+            yield AnswerChoiceEntry(index == self.master_choice, ans)
+
     @property
     def choices(self):
         if self.master_choice is None:
             return self.body.answerchoice_set.all()
         else:
-            for (index, ans) in enumerate(self.body.answerchoice_set.all()):
-                yield AnswerChoiceEntry(index == self.master_choice, ans)
+            return list(self._wrapped_choices())
 
     def __str__(self):
         return u'Quiz Series entry %d' % self.id
