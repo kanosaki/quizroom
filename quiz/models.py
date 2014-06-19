@@ -119,6 +119,10 @@ class QuizEntry(models.Model):
     def get_score(self, choice_index):
         return self.body.get_score(choice_index)
 
+    @property
+    def choices(self):
+        return self.body.answerchoice_set.all()
+
     def __str__(self):
         return u'Quiz Series entry %d' % self.id
 
