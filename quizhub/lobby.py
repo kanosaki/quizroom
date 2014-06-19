@@ -11,10 +11,10 @@ class LobbyHub(object):
 
     def join(self, handler):
         self.handlers.add(handler)
-        logging.info("JOIN handlers are now ", len(self.handlers))
+        logging.info("JOIN handlers are now %d" % len(self.handlers))
 
     def leave(self, handler):
-        logging.info("LEAVE handlers are now ", len(self.handlers))
+        logging.info("LEAVE handlers are now %d" % len(self.handlers))
         self.handlers.add(handler)
 
     def broadcast(self, msg):
@@ -22,7 +22,7 @@ class LobbyHub(object):
             handler.write_message(msg)
 
     def broadcast_json(self, obj):
-        logging.info("Broadcasting", obj, len(self.handlers), "handlers.")
+        logging.info("Broadcasting %s %d handlers" % (obj, len(self.handlers)))
         msg = json.dumps(obj)
         self.broadcast(msg)
 
@@ -42,7 +42,7 @@ class LobbyWebSocketHandler(websocket.WebSocketHandler):
         self.hub.join(self)
 
     def on_message(self, message):
-        print(message)
+        pass
 
     def on_connection_close(self):
         self.hub.leave(self)
