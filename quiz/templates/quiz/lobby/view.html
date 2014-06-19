@@ -29,9 +29,11 @@
 {% endblock %}
 
 {% block content %}
-  {% if quiz %}
-    {% include 'quiz/quiz/view.html' %}
-  {% else %}
+  {% if lobby.current_state == 'INACTIVE' %}
     {% include 'quiz/quiz/noquiz.html' %}
+  {% elif lobby.current_state == 'CLOSED' %}
+    {% include 'quiz/quiz/closed.html' %}
+  {% else %}
+    {% include 'quiz/quiz/view.html' %}
   {% endif %}
 {% endblock %}
