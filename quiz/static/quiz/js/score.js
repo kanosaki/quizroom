@@ -3,7 +3,7 @@ $(document).ready(function(){
 	function makeRanking(data){
 		for(var i in data){
 			var msg;
-			if(i.is_you){
+			if(data[i].is_you){
 				msg = '<tr class="success">';
 			} else {
 				msg = '<tr>';
@@ -17,7 +17,7 @@ $(document).ready(function(){
 	}
 
 	//GET後ランキング表を表示
-	$.get('{% url 'lobby_show' lobby.pk %}',
+	$.get(url,
 		{
 			'type' : 'query',
 			'command' : 'score_list'
