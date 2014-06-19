@@ -19,16 +19,16 @@
 		$(document).ready(function(){
 			//ランキング表作成
 			function makeRanking(data){
-				for(var obj in data){
+				for(var i in data){
 					var msg;
-					if(obj.is_you){
+					if(data[i].is_you){
 						msg = '<tr class="success">';
 					} else {
 						msg = '<tr>';
 					}
-					msg = msg + '<td>' + obj.rank + '</td>';
-					msg = msg + '<td>' + obj.name + '</td>';
-					msg = msg + '<td>' + obj.score + '</td>';
+					msg = msg + '<td>' + data[i].rank + '</td>';
+					msg = msg + '<td>' + data[i].name + '</td>';
+					msg = msg + '<td>' + data[i].score + '</td>';
 					msg = msg + '</tr>';
 					$("table#ranking tbody").append(msg);
 				}
