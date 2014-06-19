@@ -29,13 +29,13 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="{% url 'index' %}">{% block navbar_title %}Quizroom{% endblock %}</a>
+      <a class="navbar-brand" href="{% url 'lobby_now' %}">{% block navbar_title %}Quizroom{% endblock %}</a>
     </div>
     <div class="collapse navbar-collapse">
       <ul class="nav navbar-nav">
         <li id="nav-quiznow"><a href="{% url 'lobby_now' %}">クイズ</a></li>
         <li id="nav-ranking"><a href="{% url 'lobby_ranking_now' %}">ランキング</a></li>
-        <li id="nav-mypage"><a href="#contact">マイページ</a></li>
+        <li id="nav-mypage"><a href="{% url 'mypage' %}">マイページ</a></li>
       </ul>
     </div>
     <!--/.nav-collapse -->
