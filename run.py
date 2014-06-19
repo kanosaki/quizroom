@@ -17,6 +17,7 @@ define('django_settings', type=str, default='quizroom.settings')
 
 
 def main():
+    os.environ["DJANGO_SETTINGS_MODULE"] = options.django_settings
     parse_command_line()
     application = quizhub.app.init_app()
     http_server = tornado.httpserver.HTTPServer(application)

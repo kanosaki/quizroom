@@ -8,7 +8,6 @@ from quizhub.lobby import LobbyWebSocketHandler
 
 
 def init_app():
-    os.environ["DJANGO_SETTINGS_MODULE"] = options.django_settings
     django_app = tornado.wsgi.WSGIContainer(
         django.core.handlers.wsgi.WSGIHandler()
     )
