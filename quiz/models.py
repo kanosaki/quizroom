@@ -436,7 +436,7 @@ class Lobby(models.Model):
                       'is_you': ans.user.pk == requester_uid}
                      for ans in answerers]
             ret.append({
-                'choice_id': choice + 1,
+                'choice_id': choice,
                 'answerers': anses,
             })
         return ret
