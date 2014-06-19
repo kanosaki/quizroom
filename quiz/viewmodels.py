@@ -3,7 +3,10 @@ from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView  # , DeleteView
 from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.shortcuts import redirect, render, get_object_or_404
+from django.core.exceptions import PermissionDenied
 
 from quiz.forms import ParticipantForm, QuizForm
 from quiz.models import Participant, Quiz, Lobby
@@ -215,12 +218,19 @@ class ViewLobby(TemplateView):
             context = self.get_context_data(lobby_id=lobby_id)
             lobby = context['lobby']
             participant = context['participant']
-            if not lobby.can_accept_answer(participant):
-                return utils.JsonStatuses.failed('Closed')
             if 'choice_id' not in request.POST:
                 return utils.JsonStatuses.failed('Invalid POST: choice_id required.')
             choice_id = request.POST['choice_id']
-            lobby.submit_answer(participant, choice_id)
+            if request.user.is_authenticated():
+                if lobby.current_state == 'QUIZ_OPENED' or lobby.current_state == 'MASTER_ANSWERING':
+                    lobby.submit_master_answer(choice_id)
+                else:
+                    return utils.JsonStatuses.failed('Closed')
+            else:
+                if lobby.current_state == 'QUIZ_OPENED':
+                    lobby.submit_answer(participant, choice_id)
+                else:
+                    return utils.JsonStatuses.failed('Closed')
             return utils.JsonStatuses.ok()
         else:
             return utils.JsonStatuses.failed('Unknown command')
@@ -249,6 +259,10 @@ class ViewLobbyRankingNow(TemplateView):
 
 class ControlLobby(TemplateView):
     template_name = 'quiz/lobby/control.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, req, *args, **kw):
         lobby = Lobby.objects.get(pk=kw['pk'])
@@ -309,6 +323,8 @@ class ActiveLobbyView(TemplateView):
             return render(request, 'quiz/lobby/nolobby.html')
 
     def post(self, req, *args, **kw):
+        if not req.user.is_authenticated():
+            raise PermissionDenied()
         activating_id = req.POST['id']
         if activating_id == 'default':
             lobby = Lobby.objects.filter(started_time=None).first()

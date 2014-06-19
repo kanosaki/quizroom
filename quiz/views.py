@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 import django.core.exceptions
 from django.http import HttpResponse, HttpResponseNotFound
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 
 import utils
 from quiz.models import Lobby, Quiz, Participant, UserAnswer
@@ -28,7 +29,7 @@ def submit_answer(req, quiz_id):
     ans.save()
     return utils.JsonStatuses.OK
 
-
+@login_required
 def game_control(req):
     return render(req, 'quiz/game_control.html', {
         'lobbies': Lobby.objects.all(),
