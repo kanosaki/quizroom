@@ -82,6 +82,7 @@
         <th>IsActive</th>
         <th>Opened at</th>
         <th>Closed at</th>
+        <th>Master Choice</th>
       </tr>
       </thead>
       <tbody>
@@ -96,6 +97,7 @@
           {% endif %}
           <td>{{ quiz.opened_at }}</td>
           <td>{{ quiz.closed_at }}</td>
+          <td>{{ quiz.master_choice }}</td>
         </tr>
       {% endfor %}
       </tbody>

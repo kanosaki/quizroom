@@ -111,6 +111,7 @@ class QuizEntry(models.Model):
     def reset(self):
         self.opened_at = None
         self.closed_at = None
+        self.master_choice = None
         self.save()
 
     def open(self):
@@ -363,6 +364,7 @@ class Lobby(models.Model):
                 'caption': quiz.body.caption,
                 'opened_at': quiz.opened_at,
                 'closed_at': quiz.closed_at,
+                'master_choice': quiz.master_choice,
                 'is_active': quiz == self.active_quiz,
             }
 
