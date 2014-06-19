@@ -29,7 +29,7 @@ def submit_answer(req, quiz_id):
     ans.save()
     return utils.JsonStatuses.OK
 
-@login_required
+@login_required(login_url='/admin')
 def game_control(req):
     return render(req, 'quiz/game_control.html', {
         'lobbies': Lobby.objects.all(),

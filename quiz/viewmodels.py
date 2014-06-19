@@ -222,7 +222,7 @@ class ViewLobby(TemplateView):
                 return utils.JsonStatuses.failed('Invalid POST: choice_id required.')
             choice_id = request.POST['choice_id']
             if request.user.is_authenticated():
-                if lobby.current_state == 'QUIZ_OPENED' or lobby.current_state == 'MASTER_ANSWERING':
+                if lobby.current_state == 'MASTER_ANSWERING':
                     lobby.submit_master_answer(choice_id)
                 else:
                     return utils.JsonStatuses.failed('Closed')
@@ -260,7 +260,7 @@ class ViewLobbyRankingNow(TemplateView):
 class ControlLobby(TemplateView):
     template_name = 'quiz/lobby/control.html'
 
-    @method_decorator(login_required)
+    @method_decorator(login_required(login_url='/admin'))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
