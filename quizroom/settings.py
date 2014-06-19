@@ -15,8 +15,14 @@ from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# Production
+# DEBUG = False
+# ALLOWED_HOSTS = ['*']
+
+# Develop
 DEBUG = True
+ALLOWED_HOSTS = ['*']
+
 
 SECRET_KEY_FILE = os.path.expandvars("$HOME/.django_secret_key")
 
@@ -43,8 +49,6 @@ TEMPLATE_DIRS = [
     os.path.join(BASE_DIR, 'templates'),
     os.path.join(BASE_DIR, 'data'),
 ]
-
-ALLOWED_HOSTS = []
 
 
 # Application definition
