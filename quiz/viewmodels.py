@@ -11,6 +11,7 @@ from django.core.exceptions import PermissionDenied
 from quiz.forms import ParticipantForm, QuizForm
 from quiz.models import Participant, Quiz, Lobby
 from quiz import control
+from quiz.viewutils import signin_required
 import utils
 from utils import api_guard
 
@@ -96,6 +97,10 @@ class UpdateQuiz(QuizFormMixin, UpdateView):
 
 class ViewLobby(TemplateView):
     template_name = 'quiz/lobby/view.html'
+
+    @method_decorator(signin_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kw):
         uid = self.request.session['uid']
@@ -204,6 +209,8 @@ class ViewLobby(TemplateView):
         try:
             if request.GET.get('type') == 'query':
                 return self.query_data(request, *args, **kwargs)
+        except Participant.DoesNotExist:
+            return utils.JsonStatuses.failed('参加登録していません')
         except Exception as e:
             return utils.JsonStatuses.failed(str(e))
         try:
@@ -252,6 +259,10 @@ class ViewLobbyRanking(TemplateView):
 
 
 class ViewLobbyRankingNow(TemplateView):
+    @method_decorator(signin_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
     def get(self, request, *args, **kwargs):
         active_lobby = control.active_lobby.get()
         if active_lobby is not None:
@@ -299,6 +310,10 @@ class ControlLobby(TemplateView):
 class ViewLobbyPresenter(TemplateView):
     template_name = 'quiz/presenter/view.html'
 
+    @method_decorator(login_required(login_url='/admin'))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kw):
         lobby_id = self.kwargs.get('pk')
         lobby = get_object_or_404(Lobby, pk=lobby_id)
@@ -319,6 +334,10 @@ class ViewLobbyPresenter(TemplateView):
 
 class ActiveLobbyView(TemplateView):
     template_name = 'quiz/lobby/view.html'
+
+    @method_decorator(signin_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         active_lobby = control.active_lobby.get()
