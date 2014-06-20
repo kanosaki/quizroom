@@ -335,6 +335,7 @@ class Lobby(models.Model):
         self.save()
 
     def show_scores(self):
+        self.update_score()
         self.change_state('SHOWING_SCORE')
         self.save()
 
@@ -386,8 +387,23 @@ class Lobby(models.Model):
             self.save()
 
     def _fetch_scores(self):
+        for score_entry in UserScore.objects.filter(lobby=self):
+            yield (
+                score_entry.score,
+                score_entry.participant
+            )
+
+    def update_score(self):
+        UserScore.objects.filter(lobby=self).delete()
+        user_scores = []
         for participant in self.players.all():
-            yield (participant.score_for(self), participant)
+            score = participant.score_for(self)
+            user_scores.append(UserScore(
+                lobby=self,
+                participant=participant,
+                score=score))
+        UserScore.objects.bulk_create(user_scores)
+
 
     @property
     def score_list(self):
@@ -465,6 +481,9 @@ class Lobby(models.Model):
         self.active_quiz.set_master_answer(choice_id)
 
 
-
+class UserScore(models.Model):
+    lobby = models.ForeignKey(Lobby)
+    participant = models.ForeignKey(Participant)
+    score = models.IntegerField()
 
 
