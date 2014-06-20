@@ -40,5 +40,8 @@ static/*
 db/*
 !db/.gitkeep
 
+log/*
+!log/.gitkeep
+
 # Databases
 *.sqlite3
