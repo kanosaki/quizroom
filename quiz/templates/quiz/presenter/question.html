@@ -1,10 +1,8 @@
-<div align="center">
-<div class="jumbotron">
+<div class="jumbotron" align="center">
 	<h2>{{ quiz.caption }}</h2>
 	<div id="quiz-content-container">
 		<p>{{ quiz.get_content|safe }}</p>
 	</div> 
-</div>
 </div>
 
 <div>
@@ -12,7 +10,7 @@
 	<div class="row ans-row">
 		<div class="col-xs-2 ans-num"><h3>{{ forloop.counter }}:</h3></div>
 		<div class="col-xs-10">
-			<button class="btn btn-primary btn-lg btn-block">
+			<button class="btn btn-primary btn-lg btn-block" align="center">
 				{{ choice.get_content|safe }}
 			</button>
 		</div>
