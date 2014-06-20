@@ -7,6 +7,10 @@
 	vertical-align: middle;
 }
 
+button > .img-responsive {
+    margin: 0 auto;
+}
+
 th{
 	text-align:center;
 	font-size: 16px;
